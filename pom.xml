@@ -42,15 +42,11 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.2</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>3.2.9.RELEASE</version>
-        </dependency>
+
     </dependencies>
 
     <build>
-        <finalName>SpringApp</finalName>
+        <finalName>testEpam</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>

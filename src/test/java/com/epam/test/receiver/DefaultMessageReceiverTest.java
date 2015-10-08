@@ -2,6 +2,7 @@ package com.epam.test.receiver;
 
 import com.epam.receiver.MessageReceiver;
 import com.epam.validation.ValidationException;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,7 +19,11 @@ public class DefaultMessageReceiverTest {
 
     @Test
     public void shouldNotBeException() throws ValidationException {
-        messageReceiver.receive("InstructionMessage A MZ89 5678 50 2015-03-05T10:04:56.012Z");
+        try{
+            messageReceiver.receive("InstructionMessage A MZ89 5678 50 2015-03-05T10:04:56.012Z");
+        }catch (Throwable throwable){
+            Assert.fail();
+        }
     }
 
     @Test(expected = IllegalArgumentException.class)

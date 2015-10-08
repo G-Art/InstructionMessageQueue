@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.epam.data.InstructionMessage;
 import com.epam.queue.InstructionQueue;
 import com.epam.queue.impl.InstructionQueueImpl;
+import com.epam.validation.ValidationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:spring-config.xml")
@@ -22,7 +23,7 @@ public class InstructionQueueTest {
     private InstructionMessage expectMessage;
 
     @Before
-    public void setUp() throws ParseException {
+    public void setUp() throws ParseException, ValidationException {
         underTest = new InstructionQueueImpl();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
@@ -72,7 +73,7 @@ public class InstructionQueueTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void shouldBeExceptionIfEnqueueParameterIsNull(){
+    public void shouldBeExceptionIfEnqueueParameterIsNull() throws ValidationException {
         InstructionQueue emptyQueue = new InstructionQueueImpl();
         emptyQueue.enqueue(null);
     }

@@ -1,26 +1,25 @@
 package com.epam.test.validator;
 
-import static org.junit.Assert.assertTrue;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import com.epam.data.InstructionMessage;
 import com.epam.validation.ValidationException;
 import com.epam.validation.impl.InstructionMessageValidator;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.annotation.Resource;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:spring-config.xml")
 public class InstructionMessageValidatorTest {
 
-    @Autowired
+    @Resource(name = "instructionValidator")
     private InstructionMessageValidator underTest;
 
     private SimpleDateFormat dateFormat;

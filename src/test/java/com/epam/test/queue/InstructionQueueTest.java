@@ -25,12 +25,15 @@ public class InstructionQueueTest {
     @Resource(name = "instructionsPriority")
     private Map<String, Integer> instructionsPriority;
 
+    @Resource(name = "dateFormat")
+    private String dateFormatPattern;
+
     private InstructionMessage expectMessage;
     private InstructionMessage expectMessage2;
 
     @Before
     public void setUp() throws ParseException, ValidationException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatPattern);
 
         underTest = new DefaultInstructionQueue(instructionsPriority);
 

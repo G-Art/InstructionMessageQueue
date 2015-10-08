@@ -22,11 +22,14 @@ public class InstructionMessageValidatorTest {
     @Resource(name = "instructionValidator")
     private InstructionMessageValidator underTest;
 
+    @Resource(name = "dateFormat")
+    private String dateFormatPattern;
+
     private SimpleDateFormat dateFormat;
 
     @Before
     public void setUp(){
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        dateFormat = new SimpleDateFormat(dateFormatPattern);
     }
 
     @Test

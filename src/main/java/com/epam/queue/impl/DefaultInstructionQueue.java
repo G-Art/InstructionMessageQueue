@@ -68,7 +68,7 @@ public class DefaultInstructionQueue implements InstructionQueue {
 
         int priorityValue = (Integer) priority.get(message.getInstructionType());
         for(InstructionMessage instructionMessage : queue){
-            if((Integer)priority.get(instructionMessage.getInstructionType()) <= priorityValue)
+            if((Integer)priority.get(instructionMessage.getInstructionType()) < priorityValue)
                 return queue.indexOf(instructionMessage);
         }
         return count;

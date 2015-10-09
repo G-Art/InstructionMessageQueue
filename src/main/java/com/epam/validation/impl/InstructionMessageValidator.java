@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class InstructionMessageValidator implements Validator {
 
     private Map<String, Integer> instructions;
-    private String productCodePattern;
+    private String               productCodePattern;
 
     public InstructionMessageValidator(Map<String, Integer> instructions, String productCodePattern) {
         this.instructions = instructions;
@@ -26,37 +26,46 @@ public class InstructionMessageValidator implements Validator {
 
     @Override
     public boolean validate(Object o) throws ValidationException {
-        if (o instanceof InstructionMessage)
+        if (o instanceof InstructionMessage) {
             return validateFields((InstructionMessage) o);
+        }
         throw new IllegalArgumentException(
                 "Error expected type: (InstructionMessage) actual type: (" + o.getClass() + ")");
     }
 
     private boolean validateFields(InstructionMessage o) throws ValidationException {
 
-        if (StringUtils.isEmpty(o.getInstructionType()))
+        if (StringUtils.isEmpty(o.getInstructionType())) {
             throw new ValidationException("Error InstructionType field is empty or null");
+        }
 
-        if (isNotValidInstructionType(o.getInstructionType()))
+        if (isNotValidInstructionType(o.getInstructionType())) {
             throw new ValidationException("Error InstructionType is not valid");
+        }
 
-        if (StringUtils.isEmpty(o.getProductCode()))
+        if (StringUtils.isEmpty(o.getProductCode())) {
             throw new ValidationException("Error ProductCode field is empty or null");
+        }
 
-        if (!isValidProductCode(o.getProductCode()))
+        if (!isValidProductCode(o.getProductCode())) {
             throw new ValidationException("Error invalid ProductCode");
+        }
 
-        if (o.getQuantity() < 0)
+        if (o.getQuantity() < 0) {
             throw new ValidationException("Error quantity must be positive");
+        }
 
-        if (o.getUom() <= 0 || o.getUom() > 256 )
+        if (o.getUom() <= 0 || o.getUom() > 256) {
             throw new ValidationException("Error uom must be positive and less then 256");
+        }
 
-        if (o.getTimestamp() == null)
+        if (o.getTimestamp() == null) {
             throw new ValidationException("Error date mustn't be null");
+        }
 
-        if (o.getTimestamp().getTime() <= 0 || o.getTimestamp().getTime() > new Date().getTime())
+        if (o.getTimestamp().getTime() <= 0 || o.getTimestamp().getTime() > new Date().getTime()) {
             throw new ValidationException("Error date is not valid");
+        }
 
         return true;
     }
@@ -65,8 +74,8 @@ public class InstructionMessageValidator implements Validator {
         return !instructions.keySet().contains(o);
     }
 
-    private boolean isValidProductCode(String value){
-        Pattern r = Pattern.compile(productCodePattern);
+    private boolean isValidProductCode(String value) {
+        Pattern r       = Pattern.compile(productCodePattern);
         Matcher matcher = r.matcher(value);
         return matcher.matches();
     }

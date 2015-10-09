@@ -17,27 +17,31 @@ public class DefaultMessageReceiverTest {
     @Resource(name = "messageReceiver")
     MessageReceiver messageReceiver;
 
+    private static final String CORRECT_MESSAGE = "InstructionMessage A MZ89 5678 50 2015-03-05T10:04:56.012Z";
+    private static final String MESSAGE_WITH_INCORRECT_PREFIX = "InstructionA MZ89 5678 50 2015-03-05T10:04:56.012Z";
+    private static final String MESSAGE_WITH_INCORRECT_INSTRUCTION_CODE = "InstructionMessage ! MZ89 5678 50 2015-03-05T10:04:56.012Z";
+
     @Test
-    public void shouldNotBeException() throws ValidationException {
-        try{
-            messageReceiver.receive("InstructionMessage A MZ89 5678 50 2015-03-05T10:04:56.012Z");
-        }catch (Throwable throwable){
+    public void shouldAcceptWhenMessageIsCorrect() throws ValidationException {
+        try {
+            messageReceiver.receive(CORRECT_MESSAGE);
+        } catch (Throwable throwable) {
             Assert.fail();
         }
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldBeExceptionIfMessageIsWrong() throws ValidationException {
-        messageReceiver.receive("InstructionA MZ89 5678 50 2015-03-05T10:04:56.012Z");
+    public void shouldThrowExceptionWhenMessageContainIncorrectPrefix() throws ValidationException {
+        messageReceiver.receive(MESSAGE_WITH_INCORRECT_PREFIX);
     }
 
     @Test(expected = ValidationException.class)
-    public void shouldBeExceptionIfMessageIsInvalid() throws ValidationException {
-        messageReceiver.receive("InstructionMessage XM MZ89 5678 50 2015-03-05T10:04:56.012Z");
+    public void shouldThrowExceptionWhenMessageContainIncorrectInstructionCode() throws ValidationException {
+        messageReceiver.receive(MESSAGE_WITH_INCORRECT_INSTRUCTION_CODE);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldBeExceptionIfMessageIsNull() throws ValidationException {
+    public void shouldThrowExceptionWhenMessageIsNull() throws ValidationException {
         messageReceiver.receive(null);
     }
 }

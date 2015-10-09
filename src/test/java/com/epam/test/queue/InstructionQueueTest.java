@@ -45,31 +45,35 @@ public class InstructionQueueTest {
                                                              dateFormat.parse("2015-03-05T10:04:53.012Z"));
         InstructionMessage message3 = new InstructionMessage("D", "MZ86", 5675, 53,
                                                              dateFormat.parse("2015-03-05T10:04:54.012Z"));
+        InstructionMessage message4 = new InstructionMessage("A", "MZ86", 1111, 11,
+                                                             dateFormat.parse("2015-03-05T10:04:54.012Z"));
 
+        underTest.enqueue(message4);
         underTest.enqueue(expectMessage);
         underTest.enqueue(message2);
         underTest.enqueue(expectMessage2);
         underTest.enqueue(message3);
-        underTest.enqueue(expectMessage);
 
     }
 
     @Test
     public void shouldReturnAndRemoveMessages() throws Exception {
+        underTest.dequeue();
         Assert.assertSame(expectMessage, underTest.dequeue());
-        Assert.assertSame(expectMessage, underTest.dequeue());
+        underTest.dequeue();
         Assert.assertSame(expectMessage2, underTest.dequeue());
     }
 
     @Test
     public void shouldPeekTheMostPriorityMessage() throws Exception {
+        underTest.dequeue();
         Assert.assertEquals(expectMessage, underTest.peek());
         Assert.assertEquals(expectMessage, underTest.peek());
         Assert.assertEquals(expectMessage, underTest.peek());
     }
 
     @Test
-    public void shouldBeCorrectCount() throws Exception {
+    public void shouldReturnCorrectCount() throws Exception {
         Assert.assertEquals(5, underTest.count());
 
         InstructionQueue emptyQueue = new DefaultInstructionQueue(instructionsPriority);
@@ -77,18 +81,18 @@ public class InstructionQueueTest {
     }
 
     @Test
-    public void shouldBeEmpty() throws Exception {
+    public void shouldReturnTrueIfQueueIsEmpty() throws Exception {
         InstructionQueue emptyQueue = new DefaultInstructionQueue(instructionsPriority);
         Assert.assertTrue(emptyQueue.isEmpty());
     }
 
     @Test
-    public void shouldBeNotEmpty() throws Exception {
+    public void shouldReturnFalseIfQueueIsNotEmpty() throws Exception {
         Assert.assertFalse(underTest.isEmpty());
     }
 
     @Test(expected = NullPointerException.class)
-    public void shouldBeExceptionIfEnqueueParameterIsNull() throws ValidationException {
+    public void shouldThrowExceptionWhenEnqueueParameterIsNull() throws ValidationException {
         InstructionQueue emptyQueue = new DefaultInstructionQueue(instructionsPriority);
         emptyQueue.enqueue(null);
     }

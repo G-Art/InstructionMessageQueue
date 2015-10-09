@@ -24,22 +24,26 @@ public class DefaultInstructionQueue implements InstructionQueue {
 
     @Override
     public void enqueue(InstructionMessage message) throws ValidationException {
-            if(message == null)
-                throw new NullPointerException("Error Instruction Message shouldn't be null");
-            addIntoQueue(message);
+        if (message == null) {
+            throw new NullPointerException("Error Instruction Message shouldn't be null");
+        }
+        addIntoQueue(message);
     }
+
     @Override
     public InstructionMessage dequeue() {
-        if (isEmpty())
+        if (isEmpty()) {
             return null;
+        }
         count--;
         return queue.remove(0);
     }
 
     @Override
     public InstructionMessage peek() {
-        if (isEmpty())
+        if (isEmpty()) {
             return null;
+        }
         return queue.get(0);
     }
 
@@ -54,22 +58,24 @@ public class DefaultInstructionQueue implements InstructionQueue {
     }
 
     private void addIntoQueue(InstructionMessage message) {
-        if(isEmpty()){
+        if (isEmpty()) {
             queue.add(message);
-        }else {
+        } else {
             queue.add(findMessagePriorityPosition(message), message);
         }
         count++;
     }
 
     private int findMessagePriorityPosition(InstructionMessage message) {
-        if(priority == null)
+        if (priority == null) {
             return 0;
+        }
 
         int priorityValue = (Integer) priority.get(message.getInstructionType());
-        for(InstructionMessage instructionMessage : queue){
-            if((Integer)priority.get(instructionMessage.getInstructionType()) < priorityValue)
+        for (InstructionMessage instructionMessage : queue) {
+            if ((Integer) priority.get(instructionMessage.getInstructionType()) < priorityValue) {
                 return queue.indexOf(instructionMessage);
+            }
         }
         return count;
     }

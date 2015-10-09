@@ -39,9 +39,10 @@ public class InstructionQueueTest {
 
         expectMessage = new InstructionMessage("A", "MZ89", 5678, 50,
                                                dateFormat.parse("2015-03-05T10:04:51.012Z"));
-        expectMessage2 = new InstructionMessage("B", "MZ88", 5677, 51,
+
+        InstructionMessage  message2 = new InstructionMessage("B", "MZ88", 5677, 51,
                                                 dateFormat.parse("2015-03-05T10:04:52.012Z"));
-        InstructionMessage message2 = new InstructionMessage("C", "MZ87", 5676, 52,
+        expectMessage2 = new InstructionMessage("C", "MZ87", 5676, 52,
                                                              dateFormat.parse("2015-03-05T10:04:53.012Z"));
         InstructionMessage message3 = new InstructionMessage("D", "MZ86", 5675, 53,
                                                              dateFormat.parse("2015-03-05T10:04:54.012Z"));

@@ -52,7 +52,10 @@ public class InstructionMessageValidator implements Validator {
         if (o.getUom() <= 0 || o.getUom() > 256 )
             throw new ValidationException("Error uom must be positive and less then 256");
 
-        if (o.getTimathtamp().getTime() <= 0 || o.getTimathtamp().getTime() > new Date().getTime())
+        if (o.getTimestamp() == null)
+            throw new ValidationException("Error date mustn't be null");
+
+        if (o.getTimestamp().getTime() <= 0 || o.getTimestamp().getTime() > new Date().getTime())
             throw new ValidationException("Error date is not valid");
 
         return true;

@@ -1,29 +1,20 @@
 package com.epam.test.validator;
 
+import com.epam.Constants;
 import com.epam.data.InstructionMessage;
 import com.epam.validation.ValidationException;
+import com.epam.validation.Validator;
 import com.epam.validation.impl.InstructionMessageValidator;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import static org.junit.Assert.assertTrue;
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:spring-config.xml")
 public class InstructionMessageValidatorTest {
 
-    @Resource(name = "instructionValidator")
-    private InstructionMessageValidator underTest;
-
-    @Resource(name = "dateFormat")
-    private String dateFormatPattern;
+    private Validator<InstructionMessage> underTest;
 
     private SimpleDateFormat dateFormat;
 
@@ -38,7 +29,9 @@ public class InstructionMessageValidatorTest {
 
     @Before
     public void setUp() throws ParseException {
-        dateFormat = new SimpleDateFormat(dateFormatPattern);
+        dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
+
+        underTest = new InstructionMessageValidator();
 
         correctMessage = new InstructionMessage("A", "AZ19", 11, 11, dateFormat.parse("2015-03-05T10:04:51.012Z"));
 
@@ -58,36 +51,41 @@ public class InstructionMessageValidatorTest {
 
     @Test
     public void shouldAcceptWhenMessageIsCorrect() throws ValidationException {
-        assertTrue(underTest.validate(correctMessage));
+        try{
+            underTest.validate(correctMessage);
+        }catch (Exception e){
+            Assert.fail();
+        }
+
     }
 
     @Test(expected = ValidationException.class)
     public void shouldThrowExceptionWhenMessageWithIncorrectInstructionType() throws ValidationException {
-        assertTrue(underTest.validate(messageWithIncorrectInstructionType));
+        underTest.validate(messageWithIncorrectInstructionType);
     }
 
     @Test(expected = ValidationException.class)
     public void shouldThrowExceptionWhenMessageWithIncorrectProductCode() throws ValidationException {
-        assertTrue(underTest.validate(messageWithIncorrectProductCode));
+        underTest.validate(messageWithIncorrectProductCode);
     }
 
     @Test(expected = ValidationException.class)
     public void shouldThrowExceptionWhenMessageWithIncorrectQuantity() throws ValidationException {
-        assertTrue(underTest.validate(messageWithIncorrectQuantity));
+        underTest.validate(messageWithIncorrectQuantity);
     }
 
     @Test(expected = ValidationException.class)
     public void shouldThrowExceptionWhenMessageWithIncorrectUOM() throws ValidationException {
-        assertTrue(underTest.validate(messageWithIncorrectUOM));
+        underTest.validate(messageWithIncorrectUOM);
     }
 
     @Test(expected = ValidationException.class)
     public void shouldThrowExceptionWhenMessageWithNullTimestamp() throws ValidationException {
-        assertTrue(underTest.validate(messageWithNullTimestamp));
+        underTest.validate(messageWithNullTimestamp);
     }
 
     @Test(expected = ValidationException.class)
     public void shouldThrowExceptionWhenMessageWithIncorrectTimestamp() throws ValidationException {
-        assertTrue(underTest.validate(messageWithIncorrectTimestamp));
+        underTest.validate(messageWithIncorrectTimestamp);
     }
 }

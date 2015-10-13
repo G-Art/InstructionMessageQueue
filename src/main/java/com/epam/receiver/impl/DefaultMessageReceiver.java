@@ -1,16 +1,17 @@
 package com.epam.receiver.impl;
 
+import com.epam.Constants;
 import com.epam.data.InstructionMessage;
 import com.epam.queue.InstructionQueue;
 import com.epam.queue.impl.DefaultInstructionQueue;
 import com.epam.receiver.MessageReceiver;
 import com.epam.validation.ValidationException;
 import com.epam.validation.Validator;
+import com.epam.validation.impl.InstructionMessageValidator;
 import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Map;
 
 public class DefaultMessageReceiver implements MessageReceiver {
 
@@ -18,13 +19,13 @@ public class DefaultMessageReceiver implements MessageReceiver {
 
     private SimpleDateFormat dateFormat;
 
-    private Validator        validator;
-    private InstructionQueue queue;
+    private Validator<InstructionMessage> validator;
+    private InstructionQueue              queue;
 
-    public DefaultMessageReceiver(Validator validator, Map priorityMap, String dateFormat) {
-        this.dateFormat = new SimpleDateFormat(dateFormat);
-        this.validator = validator;
-        this.queue = new DefaultInstructionQueue(priorityMap);
+    public DefaultMessageReceiver() {
+        this.dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
+        this.validator = new InstructionMessageValidator();
+        this.queue = new DefaultInstructionQueue();
     }
 
     @Override

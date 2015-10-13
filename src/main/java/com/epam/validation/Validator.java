@@ -1,5 +1,5 @@
 package com.epam.validation;
 
-public interface Validator {
-    boolean validate(Object o) throws ValidationException;
+public interface Validator<E> {
+    void validate(E o) throws ValidationException;
 }

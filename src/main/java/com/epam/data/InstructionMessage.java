@@ -8,14 +8,14 @@ public class InstructionMessage {
     private String productCode;
     private int    quantity;
     private int    uom;
-    private Date   timathtamp;
+    private Date   timestamp;
 
-    public InstructionMessage(String instructionType, String productCode, int quantity, int uom, Date timathtamp) {
+    public InstructionMessage(String instructionType, String productCode, int quantity, int uom, Date timestamp) {
         this.instructionType = instructionType;
         this.productCode = productCode;
         this.quantity = quantity;
         this.uom = uom;
-        this.timathtamp = timathtamp;
+        this.timestamp = timestamp;
     }
 
     public InstructionMessage() {
@@ -53,12 +53,12 @@ public class InstructionMessage {
         this.uom = uom;
     }
 
-    public Date getTimathtamp() {
-        return timathtamp;
+    public Date getTimestamp() {
+        return timestamp;
     }
 
-    public void setTimathtamp(Date timathtamp) {
-        this.timathtamp = timathtamp;
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 
 }

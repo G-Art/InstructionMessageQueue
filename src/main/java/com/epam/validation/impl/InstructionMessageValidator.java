@@ -1,92 +1,79 @@
 package com.epam.validation.impl;
 
 import com.epam.data.InstructionMessage;
+import com.epam.queue.PriorityType;
 import com.epam.validation.ValidationException;
 import com.epam.validation.Validator;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class InstructionMessageValidator implements Validator {
+public class InstructionMessageValidator implements Validator<InstructionMessage> {
 
-    private Map<String, Integer> instructions;
-    private String               productCodePattern;
-
-    public InstructionMessageValidator(Map<String, Integer> instructions, String productCodePattern) {
-        this.instructions = instructions;
-        this.productCodePattern = productCodePattern;
-    }
-
-    public InstructionMessageValidator() {
-    }
+    private static final String PRODUCT_CODE_PATTERN = "^[A-Z]{2}\\d{2}$";
 
     @Override
-    public boolean validate(Object o) throws ValidationException {
-        if (o instanceof InstructionMessage) {
-            return validateFields((InstructionMessage) o);
-        }
-        throw new IllegalArgumentException(
-                "Error expected type: (InstructionMessage) actual type: (" + o.getClass() + ")");
+    public void validate(InstructionMessage o) throws ValidationException {
+            validateFields(o);
     }
 
-    private boolean validateFields(InstructionMessage o) throws ValidationException {
+    private void validateFields(InstructionMessage instructionMessage) throws ValidationException {
 
-        if (StringUtils.isEmpty(o.getInstructionType())) {
-            throw new ValidationException("Error InstructionType field is empty or null");
-        }
+        validateInstructionType(instructionMessage);
+        validateProductCode(instructionMessage);
+        validateTimestamp(instructionMessage);
 
-        if (isNotValidInstructionType(o.getInstructionType())) {
-            throw new ValidationException("Error InstructionType is not valid");
-        }
-
-        if (StringUtils.isEmpty(o.getProductCode())) {
-            throw new ValidationException("Error ProductCode field is empty or null");
-        }
-
-        if (!isValidProductCode(o.getProductCode())) {
-            throw new ValidationException("Error invalid ProductCode");
-        }
-
-        if (o.getQuantity() < 0) {
+        if (instructionMessage.getQuantity() < 0) {
             throw new ValidationException("Error quantity must be positive");
         }
 
-        if (o.getUom() <= 0 || o.getUom() > 256) {
+        if (instructionMessage.getUom() <= 0 || instructionMessage.getUom() > 256) {
             throw new ValidationException("Error uom must be positive and less then 256");
         }
 
-        if (o.getTimestamp() == null) {
-            throw new ValidationException("Error date mustn't be null");
-        }
-
-        if (o.getTimestamp().getTime() <= 0 || o.getTimestamp().getTime() > new Date().getTime()) {
-            throw new ValidationException("Error date is not valid");
-        }
-
-        return true;
     }
 
-    private boolean isNotValidInstructionType(String o) {
-        return !instructions.keySet().contains(o);
+    private boolean isValidInstructionType(String o) {
+        return PriorityType.valueOf(o) != null;
     }
 
     private boolean isValidProductCode(String value) {
-        Pattern r       = Pattern.compile(productCodePattern);
+        Pattern r       = Pattern.compile(PRODUCT_CODE_PATTERN);
         Matcher matcher = r.matcher(value);
         return matcher.matches();
     }
 
-    @Required
-    public void setInstructions(Map<String, Integer> instructions) {
-        this.instructions = instructions;
+    private void validateInstructionType(InstructionMessage instructionMessage) throws ValidationException {
+        if (StringUtils.isEmpty(instructionMessage.getInstructionType())) {
+            throw new ValidationException("Error InstructionType field is empty or null");
+        }
+
+        if (!isValidInstructionType(instructionMessage.getInstructionType())) {
+            throw new ValidationException("Error InstructionType is not valid");
+        }
     }
 
-    @Required
-    public void setProductCodePattern(String productCodePattern) {
-        this.productCodePattern = productCodePattern;
+    private void validateProductCode(InstructionMessage instructionMessage) throws ValidationException {
+        if (StringUtils.isEmpty(instructionMessage.getProductCode())) {
+            throw new ValidationException("Error ProductCode field is empty or null");
+        }
+
+        if (!isValidProductCode(instructionMessage.getProductCode())) {
+            throw new ValidationException("Error invalid ProductCode");
+        }
     }
+
+    private void validateTimestamp(InstructionMessage instructionMessage) throws ValidationException {
+
+        if (instructionMessage.getTimestamp() == null) {
+            throw new ValidationException("Error date mustn't be null");
+        }
+
+        if (instructionMessage.getTimestamp().getTime() <= 0 || instructionMessage.getTimestamp().getTime() > new Date().getTime()) {
+            throw new ValidationException("Error date is not valid");
+        }
+    }
+
 }

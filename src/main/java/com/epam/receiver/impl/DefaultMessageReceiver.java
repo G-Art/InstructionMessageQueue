@@ -13,11 +13,12 @@ import com.epam.validation.impl.InstructionMessageValidator;
 public class DefaultMessageReceiver implements MessageReceiver {
 
 
-    private Parser<InstructionMessage, String> instructionMessageParser = new InstructionMessageParser();
-    private Validator<InstructionMessage> validator;
-    private InstructionQueue              queue;
+    private Parser<InstructionMessage, String> instructionMessageParser;
+    private Validator<InstructionMessage>      validator;
+    private InstructionQueue                   queue;
 
     public DefaultMessageReceiver() {
+        this.instructionMessageParser = new InstructionMessageParser();
         this.validator = new InstructionMessageValidator();
         this.queue = new DefaultInstructionQueue();
     }

@@ -1,109 +1,117 @@
 package com.epam.test.queue;
 
-import com.epam.Constants;
 import com.epam.data.InstructionMessage;
 import com.epam.queue.InstructionQueue;
 import com.epam.queue.impl.DefaultInstructionQueue;
 import com.epam.validation.ValidationException;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-public class InstructionQueueTest {
+import static org.junit.Assert.*;
+
+public class InstructionQueueTest{
+
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     private InstructionQueue underTest;
 
     private InstructionMessage expectMessageAType;
-    private InstructionMessage expectMessageAType1;
-    private InstructionMessage expectMessageBType;
-    private InstructionMessage expectMessageBType1;
-    private InstructionMessage expectMessageCType;
-    private InstructionMessage expectMessageDType;
 
-    private int EXPECTED_COUNT;
+    List<InstructionMessage> expectOrderedMessages;
+
 
     @Before
     public void setUp() throws ParseException, ValidationException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        expectOrderedMessages = new ArrayList<InstructionMessage>();
 
         underTest = new DefaultInstructionQueue();
 
-        expectMessageAType = new InstructionMessage("A", "MZ89", 5678, 50,
-                                                    dateFormat.parse("2015-03-05T10:04:51.012Z"));
-        expectMessageAType1 = new InstructionMessage("A", "MZ86", 1111, 11,
-                                                     dateFormat.parse("2015-03-05T10:04:54.012Z"));
+        expectMessageAType = createInstructionMessage("A", "MZ89", 5678, 50,
+                                                      dateFormat.parse("2015-03-05T10:04:51.012Z"));
+        InstructionMessage expectMessageAType1 = createInstructionMessage("A", "MZ86", 1111, 11,
+                                                                          dateFormat.parse("2015-03-05T10:04:54.012Z"));
 
-        expectMessageBType = new InstructionMessage("B", "MZ88", 5677, 51,
-                                                             dateFormat.parse("2015-03-05T10:04:52.012Z"));
-        expectMessageBType1 = new InstructionMessage("B", "MZ90", 5677, 51,
-                                                    dateFormat.parse("2015-03-05T10:04:52.012Z"));
-        expectMessageCType = new InstructionMessage("C", "MZ87", 5676, 52,
-                                                dateFormat.parse("2015-03-05T10:04:53.012Z"));
-        expectMessageDType = new InstructionMessage("D", "MZ86", 5675, 53,
-                                                             dateFormat.parse("2015-03-05T10:04:54.012Z"));
+        InstructionMessage expectMessageBType = createInstructionMessage("B", "MZ88", 5677, 51,
+                                                                         dateFormat.parse("2015-03-05T10:04:52.012Z"));
+        InstructionMessage expectMessageBType1 = createInstructionMessage("B", "MZ90", 5677, 51,
+                                                                          dateFormat.parse("2015-03-05T10:04:52.012Z"));
+        InstructionMessage expectMessageCType = createInstructionMessage("C", "MZ87", 5676, 52,
+                                                                         dateFormat.parse("2015-03-05T10:04:53.012Z"));
+        InstructionMessage expectMessageDType = createInstructionMessage("D", "MZ86", 5675, 53,
+                                                                         dateFormat.parse("2015-03-05T10:04:54.012Z"));
 
-        underTest.enqueue(expectMessageBType);
-        underTest.enqueue(expectMessageCType);
-        underTest.enqueue(expectMessageAType1);
-        underTest.enqueue(expectMessageDType);
-        underTest.enqueue(expectMessageAType);
-        underTest.enqueue(expectMessageBType1);
-        underTest.enqueue(expectMessageDType);
 
-        EXPECTED_COUNT = 7;
+
+        underTest.enqueue(expectMessageBType1);         expectOrderedMessages.add(expectMessageAType);
+        underTest.enqueue(expectMessageCType);          expectOrderedMessages.add(expectMessageAType1);
+        underTest.enqueue(expectMessageAType);          expectOrderedMessages.add(expectMessageBType1);
+        underTest.enqueue(expectMessageDType);          expectOrderedMessages.add(expectMessageBType);
+        underTest.enqueue(expectMessageAType1);         expectOrderedMessages.add(expectMessageCType);
+        underTest.enqueue(expectMessageBType);          expectOrderedMessages.add(expectMessageDType);
+        underTest.enqueue(expectMessageDType);          expectOrderedMessages.add(expectMessageDType);
 
     }
 
     @Test
-    public void shouldDequeueMessages() throws Exception {
-        Assert.assertSame(expectMessageAType1, underTest.dequeue());
-        Assert.assertSame(expectMessageAType, underTest.dequeue());
-        Assert.assertSame(expectMessageBType, underTest.dequeue());
-        Assert.assertSame(expectMessageBType1, underTest.dequeue());
-        Assert.assertSame(expectMessageCType, underTest.dequeue());
-        Assert.assertSame(expectMessageDType, underTest.dequeue());
-        Assert.assertSame(expectMessageDType, underTest.dequeue());
+    public void shouldReturnCorrectOrderedMessages() {
+        for (InstructionMessage expectOrderedMessage : expectOrderedMessages) {
+            assertSame(expectOrderedMessage, underTest.dequeue());
+        }
     }
 
     @Test
-    public void shouldPeekTheMostPriorityMessage() throws Exception {
-        Assert.assertEquals(expectMessageAType1, underTest.peek());
-        Assert.assertEquals(expectMessageAType1, underTest.peek());
+    public void shouldPeekMessageWithHighestPriority() {
+        assertEquals(expectMessageAType, underTest.peek());
     }
 
     @Test
-    public void shouldReturnCorrectCount() throws Exception {
-        Assert.assertEquals(EXPECTED_COUNT, underTest.count());
+    public void shouldReturnCorrectCount(){
+        assertEquals(expectOrderedMessages.size(), underTest.count());
     }
 
     @Test
-    public void shouldReturnZeroCount() throws Exception {
+    public void shouldReturnZeroCount() {
         cleanQueue();
-        Assert.assertEquals(0, underTest.count());
+        assertEquals(0, underTest.count());
     }
 
     @Test
-    public void shouldReturnTrueIfQueueIsEmpty() throws Exception {
+    public void shouldReturnTrueIfQueueIsEmpty() {
         cleanQueue();
-        Assert.assertTrue(underTest.isEmpty());
+        assertTrue(underTest.isEmpty());
     }
 
     @Test
-    public void shouldReturnFalseIfQueueIsNotEmpty() throws Exception {
-        Assert.assertFalse(underTest.isEmpty());
+    public void shouldReturnFalseIfQueueIsNotEmpty() {
+        assertFalse(underTest.isEmpty());
     }
 
     @Test(expected = NullPointerException.class)
-    public void shouldThrowExceptionWhenEnqueueParameterIsNull() throws ValidationException {
+    public void shouldThrowExceptionWhenEnqueueParameterIsNull() {
         cleanQueue();
         underTest.enqueue(null);
     }
 
 
-    private void cleanQueue(){
+    private void cleanQueue() {
         underTest = new DefaultInstructionQueue();
+    }
+
+    private InstructionMessage createInstructionMessage(String instructionType, String productCode, int quantity,
+                                                        int uom, Date date) {
+        InstructionMessage message = new InstructionMessage();
+        message.setInstructionType(instructionType);
+        message.setProductCode(productCode);
+        message.setUom(uom);
+        message.setQuantity(quantity);
+        message.setTimestamp(date);
+        return message;
     }
 }

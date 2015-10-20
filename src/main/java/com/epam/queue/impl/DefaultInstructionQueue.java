@@ -3,7 +3,6 @@ package com.epam.queue.impl;
 import com.epam.data.InstructionMessage;
 import com.epam.queue.InstructionQueue;
 import com.epam.queue.PriorityType;
-import com.epam.validation.ValidationException;
 
 import java.util.Comparator;
 import java.util.PriorityQueue;
@@ -39,12 +38,13 @@ public class DefaultInstructionQueue implements InstructionQueue {
     public DefaultInstructionQueue() {
         this.queue = new PriorityQueue<MessageWrapper>(DEFAULT_INITIAL_CAPACITY, new Comparator<MessageWrapper>() {
             @Override
-            public int compare(MessageWrapper o1, MessageWrapper o2) {
+            public int compare(MessageWrapper messageWrapperLeft, MessageWrapper messageWrapperRight) {
 
-                int pVal1 = getPriorityValue(o1.getMessage());
-                int pVal2 = getPriorityValue(o2.getMessage());
+                int pVal1 = getPriorityValue(messageWrapperLeft.getMessage());
+                int pVal2 = getPriorityValue(messageWrapperRight.getMessage());
 
-                return pVal2 == pVal1 ? o1.getOrder() - o2.getOrder() : pVal2 - pVal1;
+                return Integer.compare(pVal2, pVal1) == 0? Integer.compare(messageWrapperLeft.getOrder(), messageWrapperRight.getOrder()) : Integer.compare(
+                        pVal2, pVal1);
             }
 
             private int getPriorityValue(InstructionMessage instructionMessage) {
@@ -55,7 +55,7 @@ public class DefaultInstructionQueue implements InstructionQueue {
 
 
     @Override
-    public void enqueue(InstructionMessage message) throws ValidationException {
+    public void enqueue(InstructionMessage message){
         if (message == null) {
             throw new NullPointerException("Error Instruction Message shouldn't be null");
         }

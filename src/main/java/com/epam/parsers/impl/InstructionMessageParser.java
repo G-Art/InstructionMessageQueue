@@ -1,6 +1,5 @@
 package com.epam.parsers.impl;
 
-import com.epam.Constants;
 import com.epam.data.InstructionMessage;
 import com.epam.parsers.Parser;
 import org.springframework.util.StringUtils;
@@ -10,12 +9,13 @@ import java.text.SimpleDateFormat;
 
 public class InstructionMessageParser implements Parser<InstructionMessage, String>{
 
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     private static final String MESSAGE_PREFIX = "InstructionMessage";
 
     private SimpleDateFormat dateFormat;
 
     public InstructionMessageParser() {
-        this.dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
+        this.dateFormat = new SimpleDateFormat(DATE_FORMAT);
     }
 
     @Override
@@ -31,10 +31,13 @@ public class InstructionMessageParser implements Parser<InstructionMessage, Stri
         String[] splittedMessage = message.split(" ");
 
         try {
-            return new InstructionMessage(splittedMessage[1], splittedMessage[2],
-                                                        Integer.parseInt(splittedMessage[3]),
-                                                        Integer.parseInt(splittedMessage[4]),
-                                                        dateFormat.parse(splittedMessage[5]));
+            InstructionMessage instructionMessage = new InstructionMessage();
+            instructionMessage.setInstructionType(splittedMessage[1]);
+            instructionMessage.setProductCode(splittedMessage[2]);
+            instructionMessage.setQuantity(Integer.parseInt(splittedMessage[3]));
+            instructionMessage.setUom(Integer.parseInt(splittedMessage[4]));
+            instructionMessage.setTimestamp(dateFormat.parse(splittedMessage[5]));
+            return instructionMessage;
         } catch (ParseException e) {
             throw new IllegalArgumentException(e);
         }

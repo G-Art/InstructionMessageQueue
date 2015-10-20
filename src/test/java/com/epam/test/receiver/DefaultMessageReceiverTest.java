@@ -25,7 +25,7 @@ public class DefaultMessageReceiverTest {
         try {
             messageReceiver.receive(CORRECT_MESSAGE);
         } catch (Throwable throwable) {
-            Assert.fail();
+            Assert.fail(throwable.getMessage());
         }
     }
 

@@ -10,13 +10,6 @@ public class InstructionMessage {
     private int    uom;
     private Date   timestamp;
 
-    public InstructionMessage(String instructionType, String productCode, int quantity, int uom, Date timestamp) {
-        this.instructionType = instructionType;
-        this.productCode = productCode;
-        this.quantity = quantity;
-        this.uom = uom;
-        this.timestamp = timestamp;
-    }
 
     public InstructionMessage() {
     }

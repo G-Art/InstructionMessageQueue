@@ -6,7 +6,4 @@ public class ValidationException extends Exception {
         super(message);
     }
 
-    public ValidationException(Throwable cause) {
-        super(cause);
-    }
 }

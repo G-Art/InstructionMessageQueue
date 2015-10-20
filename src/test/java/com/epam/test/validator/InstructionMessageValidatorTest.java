@@ -1,91 +1,135 @@
 package com.epam.test.validator;
 
-import com.epam.Constants;
 import com.epam.data.InstructionMessage;
 import com.epam.validation.ValidationException;
 import com.epam.validation.Validator;
 import com.epam.validation.impl.InstructionMessageValidator;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class InstructionMessageValidatorTest {
 
     private Validator<InstructionMessage> underTest;
 
-    private SimpleDateFormat dateFormat;
-
-    private InstructionMessage correctMessage;
-    private InstructionMessage messageWithIncorrectInstructionType;
-    private InstructionMessage messageWithIncorrectProductCode;
-    private InstructionMessage messageWithIncorrectQuantity;
-    private InstructionMessage messageWithIncorrectUOM;
-    private InstructionMessage messageWithNullTimestamp;
-    private InstructionMessage messageWithIncorrectTimestamp;
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
 
     @Before
     public void setUp() throws ParseException {
-        dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
-
         underTest = new InstructionMessageValidator();
-
-        correctMessage = new InstructionMessage("A", "AZ19", 11, 11, dateFormat.parse("2015-03-05T10:04:51.012Z"));
-
-        messageWithIncorrectInstructionType = new InstructionMessage("", "AZ19", 1111, 11,
-                                                                     dateFormat.parse("2015-03-05T10:04:51.012Z"));
-        messageWithIncorrectProductCode = new InstructionMessage("A", "0000", 1111, 11,
-                                                                 dateFormat.parse("2015-03-05T10:04:51.012Z"));
-        messageWithIncorrectQuantity = new InstructionMessage("A", "AZ19", -1111, 11,
-                                                              dateFormat.parse("2015-03-05T10:04:51.012Z"));
-        messageWithIncorrectUOM = new InstructionMessage("A", "AZ19", 1111, -11,
-                                                         dateFormat.parse("2015-03-05T10:04:51.012Z"));
-        messageWithIncorrectTimestamp = new InstructionMessage("A", "AZ19", 1111, 11,
-                                                               dateFormat.parse("3000-03-05T10:04:51.012Z"));
-        messageWithNullTimestamp = new InstructionMessage("A", "AZ19", 1111, 11, null);
-
     }
 
     @Test
     public void shouldAcceptWhenMessageIsCorrect() throws ValidationException {
-        try{
-            underTest.validate(correctMessage);
-        }catch (Exception e){
-            Assert.fail();
+        try {
+            underTest.validate(createCorrectInstructionMessage());
+        } catch (Throwable throwable) {
+            Assert.fail(throwable.getMessage());
         }
-
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void shouldThrowExceptionWhenMessageWithIncorrectInstructionType() throws ValidationException {
-        underTest.validate(messageWithIncorrectInstructionType);
+        expect(ValidationException.class, "Error InstructionType field is empty or null");
+        underTest.validate(createMessageWithIncorrectInstructionType());
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void shouldThrowExceptionWhenMessageWithIncorrectProductCode() throws ValidationException {
-        underTest.validate(messageWithIncorrectProductCode);
+        expect(ValidationException.class, "Error invalid ProductCode");
+        underTest.validate(createMessageWithIncorrectProductCode());
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void shouldThrowExceptionWhenMessageWithIncorrectQuantity() throws ValidationException {
-        underTest.validate(messageWithIncorrectQuantity);
+        expect(ValidationException.class, "Error quantity must be positive");
+        underTest.validate(createMessageWithIncorrectQuantity());
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void shouldThrowExceptionWhenMessageWithIncorrectUOM() throws ValidationException {
-        underTest.validate(messageWithIncorrectUOM);
+        expect(ValidationException.class, "Error uom must be positive and less then 256");
+        underTest.validate(createMessageWithIncorrectUOM());
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void shouldThrowExceptionWhenMessageWithNullTimestamp() throws ValidationException {
-        underTest.validate(messageWithNullTimestamp);
+        expect(ValidationException.class, "Error date mustn't be null");
+        underTest.validate(createMessageWithNullTimestamp());
     }
 
-    @Test(expected = ValidationException.class)
+    @Test
     public void shouldThrowExceptionWhenMessageWithIncorrectTimestamp() throws ValidationException {
-        underTest.validate(messageWithIncorrectTimestamp);
+        expect(ValidationException.class, "Error date is not valid");
+        underTest.validate(createMessageWithIncorrectTimestamp());
     }
+
+
+
+
+
+
+
+
+    private <T extends Throwable> void expect(Class<T> expectedThrowableClass, String expectedMessage) {
+        thrown.expect(expectedThrowableClass);
+        thrown.expectMessage(expectedMessage);
+    }
+
+    private InstructionMessage createCorrectInstructionMessage() {
+        InstructionMessage message = new InstructionMessage();
+        message.setInstructionType("A");
+        message.setProductCode("AZ19");
+        message.setUom(11);
+        message.setQuantity(11);
+        message.setTimestamp(new Date());
+        return message;
+    }
+
+    private InstructionMessage createMessageWithIncorrectInstructionType() {
+        InstructionMessage message = createCorrectInstructionMessage();
+        message.setInstructionType("");
+        return message;
+    }
+
+    private InstructionMessage createMessageWithIncorrectProductCode() {
+        InstructionMessage message = createCorrectInstructionMessage();
+        message.setProductCode("1111");
+        return message;
+    }
+
+
+    private InstructionMessage createMessageWithIncorrectQuantity() {
+        InstructionMessage message = createCorrectInstructionMessage();
+        message.setQuantity(-5);
+        return message;
+    }
+
+    private InstructionMessage createMessageWithIncorrectUOM() {
+        InstructionMessage message = createCorrectInstructionMessage();
+        message.setUom(1000);
+        return message;
+    }
+
+
+    private InstructionMessage createMessageWithNullTimestamp() {
+        InstructionMessage message = createCorrectInstructionMessage();
+        message.setTimestamp(null);
+        return message;
+    }
+
+
+    private InstructionMessage createMessageWithIncorrectTimestamp() {
+        InstructionMessage message = createCorrectInstructionMessage();
+        message.setTimestamp(new Date(-100));
+        return message;
+    }
+
 }

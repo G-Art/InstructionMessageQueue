@@ -12,31 +12,36 @@ import java.util.regex.Pattern;
 
 public class InstructionMessageValidator implements Validator<InstructionMessage> {
 
-    private static final String PRODUCT_CODE_PATTERN = "^[A-Z]{2}\\d{2}$";
+    private final String PRODUCT_CODE_PATTERN = "^[A-Z]{2}\\d{2}$";
+    private final int    MAX_VALUE_UOM        = 256;
+    private final int    MIN_VALUE_QUANTITY   = 0;
+
 
     @Override
-    public void validate(InstructionMessage o) throws ValidationException {
-            validateFields(o);
-    }
-
-    private void validateFields(InstructionMessage instructionMessage) throws ValidationException {
+    public void validate(InstructionMessage instructionMessage) throws ValidationException {
 
         validateInstructionType(instructionMessage);
         validateProductCode(instructionMessage);
         validateTimestamp(instructionMessage);
-
-        if (instructionMessage.getQuantity() < 0) {
-            throw new ValidationException("Error quantity must be positive");
-        }
-
-        if (instructionMessage.getUom() <= 0 || instructionMessage.getUom() > 256) {
-            throw new ValidationException("Error uom must be positive and less then 256");
-        }
+        validateUom(instructionMessage);
+        validateQuantity(instructionMessage);
 
     }
 
-    private boolean isValidInstructionType(String o) {
-        return PriorityType.valueOf(o) != null;
+    private void validateQuantity(InstructionMessage instructionMessage) throws ValidationException {
+        if (instructionMessage.getQuantity() < MIN_VALUE_QUANTITY) {
+            throw new ValidationException("Error quantity must be positive");
+        }
+    }
+
+    private void validateUom(InstructionMessage instructionMessage) throws ValidationException {
+        if (instructionMessage.getUom() <= 0 || instructionMessage.getUom() > MAX_VALUE_UOM) {
+            throw new ValidationException("Error uom must be positive and less then " + MAX_VALUE_UOM);
+        }
+    }
+
+    private boolean isValidInstructionType(String instructionType) {
+        return PriorityType.valueOf(instructionType) != null;
     }
 
     private boolean isValidProductCode(String value) {
@@ -71,7 +76,7 @@ public class InstructionMessageValidator implements Validator<InstructionMessage
             throw new ValidationException("Error date mustn't be null");
         }
 
-        if (instructionMessage.getTimestamp().getTime() <= 0 || instructionMessage.getTimestamp().getTime() > new Date().getTime()) {
+        if (instructionMessage.getTimestamp().before(new Date(0)) || instructionMessage.getTimestamp().after(new Date())) {
             throw new ValidationException("Error date is not valid");
         }
     }

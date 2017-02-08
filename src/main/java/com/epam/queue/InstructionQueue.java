@@ -40,9 +40,10 @@ public class InstructionQueue {
                 int message1 = getPriorityValue(messageWrapperLeft.getMessage());
                 int message2 = getPriorityValue(messageWrapperRight.getMessage());
 
-                return Integer.compare(message2, message1) == 0 ?
-                        Integer.compare(messageWrapperLeft.getOrder(), messageWrapperRight.getOrder()) :
-                        Integer.compare(message2, message1);
+                if(Integer.compare(message2, message1) == 0 ){
+                   return Integer.compare(messageWrapperLeft.getOrder(), messageWrapperRight.getOrder());
+                }
+                return Integer.compare(message2, message1);
             }
 
             private int getPriorityValue(InstructionMessage instructionMessage) {

@@ -2,7 +2,6 @@ package com.epam.validator;
 
 import com.epam.data.InstructionMessage;
 import com.epam.queue.MessageType;
-import com.epam.validator.ValidationException;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;

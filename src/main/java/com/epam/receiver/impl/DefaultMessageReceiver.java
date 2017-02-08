@@ -1,26 +1,22 @@
 package com.epam.receiver.impl;
 
 import com.epam.data.InstructionMessage;
-import com.epam.parsers.Parser;
-import com.epam.parsers.impl.InstructionMessageParser;
+import com.epam.parsers.InstructionMessageParser;
 import com.epam.queue.InstructionQueue;
-import com.epam.queue.impl.DefaultInstructionQueue;
 import com.epam.receiver.MessageReceiver;
-import com.epam.validation.ValidationException;
-import com.epam.validation.Validator;
-import com.epam.validation.impl.InstructionMessageValidator;
+import com.epam.validator.ValidationException;
+import com.epam.validator.impl.InstructionMessageValidator;
 
 public class DefaultMessageReceiver implements MessageReceiver {
 
-
-    private Parser<InstructionMessage, String> instructionMessageParser;
-    private Validator<InstructionMessage>      validator;
+    private InstructionMessageParser instructionMessageParser;
+    private InstructionMessageValidator      validator;
     private InstructionQueue                   queue;
 
-    public DefaultMessageReceiver() {
-        this.instructionMessageParser = new InstructionMessageParser();
-        this.validator = new InstructionMessageValidator();
-        this.queue = new DefaultInstructionQueue();
+    public DefaultMessageReceiver(InstructionMessageParser parser, InstructionMessageValidator validator, InstructionQueue queue) {
+        this.instructionMessageParser = parser;
+        this.validator = validator;
+        this.queue = queue;
     }
 
     @Override

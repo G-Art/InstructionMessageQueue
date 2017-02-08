@@ -2,14 +2,14 @@ package com.epam.test.receiver;
 
 import com.epam.receiver.MessageReceiver;
 import com.epam.receiver.impl.DefaultMessageReceiver;
-import com.epam.validation.ValidationException;
+import com.epam.validator.ValidationException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 public class DefaultMessageReceiverTest {
 
-    MessageReceiver messageReceiver;
+    private MessageReceiver messageReceiver;
 
     private static final String CORRECT_MESSAGE                         = "InstructionMessage A MZ89 5678 50 2015-03-05T10:04:56.012Z";
     private static final String MESSAGE_WITH_INCORRECT_PREFIX           = "InstructionA MZ89 5678 50 2015-03-05T10:04:56.012Z";

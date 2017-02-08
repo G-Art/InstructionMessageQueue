@@ -1,13 +1,12 @@
-package com.epam.parsers.impl;
+package com.epam.parsers;
 
 import com.epam.data.InstructionMessage;
-import com.epam.parsers.Parser;
 import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-public class InstructionMessageParser implements Parser<InstructionMessage, String>{
+public class InstructionMessageParser {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     private static final String MESSAGE_PREFIX = "InstructionMessage";
@@ -18,15 +17,9 @@ public class InstructionMessageParser implements Parser<InstructionMessage, Stri
         this.dateFormat = new SimpleDateFormat(DATE_FORMAT);
     }
 
-    @Override
     public InstructionMessage parse(String message) {
-        if (StringUtils.isEmpty(message)) {
-            throw new IllegalArgumentException("Error message shouldn't be empty or null ");
-        }
 
-        if (!message.startsWith(MESSAGE_PREFIX)) {
-            throw new IllegalArgumentException("Error message should start with: (" + MESSAGE_PREFIX + ")");
-        }
+        checkMessage(message);
 
         String[] splittedMessage = message.split(" ");
 
@@ -40,6 +33,18 @@ public class InstructionMessageParser implements Parser<InstructionMessage, Stri
             return instructionMessage;
         } catch (ParseException e) {
             throw new IllegalArgumentException(e);
+        }
+    }
+
+    private void checkMessage(String message) {
+        if (StringUtils.isEmpty(message)) {
+            throw new IllegalArgumentException("Error: message shouldn't be empty or null ");
+        }
+
+        String instructionMessage = message.substring(0, message.indexOf(' '));
+
+        if (!instructionMessage.equals(MESSAGE_PREFIX)) {
+            throw new IllegalArgumentException("Error: message should start with: (" + MESSAGE_PREFIX + ")");
         }
     }
 }

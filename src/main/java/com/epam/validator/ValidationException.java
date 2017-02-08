@@ -1,4 +1,4 @@
-package com.epam.validation;
+package com.epam.validator;
 
 public class ValidationException extends Exception {
 

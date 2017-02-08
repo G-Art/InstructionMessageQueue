@@ -1,9 +1,9 @@
 package com.epam.test.validator;
 
 import com.epam.data.InstructionMessage;
-import com.epam.validation.ValidationException;
-import com.epam.validation.Validator;
-import com.epam.validation.impl.InstructionMessageValidator;
+import com.epam.validator.ValidationException;
+import com.epam.validator.Validator;
+import com.epam.validator.impl.InstructionMessageValidator;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -70,12 +70,6 @@ public class InstructionMessageValidatorTest {
         expect(ValidationException.class, "Error date is not valid");
         underTest.validate(createMessageWithIncorrectTimestamp());
     }
-
-
-
-
-
-
 
 
     private <T extends Throwable> void expect(Class<T> expectedThrowableClass, String expectedMessage) {

@@ -1,6 +1,6 @@
 package com.epam.receiver;
 
-import com.epam.validation.ValidationException;
+import com.epam.validator.ValidationException;
 
 
 public interface MessageReceiver {

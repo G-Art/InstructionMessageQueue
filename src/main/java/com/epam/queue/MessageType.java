@@ -1,13 +1,13 @@
 package com.epam.queue;
 
-public enum PriorityType {
+public enum MessageType {
 
     A(10), B(5), C(0), D(0);
 
     private int priority;
 
-    PriorityType(int i) {
-        priority = i;
+    MessageType(int priority) {
+        this.priority = priority;
     }
 
     public int getPriority() {

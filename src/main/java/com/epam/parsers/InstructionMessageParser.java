@@ -38,13 +38,13 @@ public class InstructionMessageParser {
 
     private void checkMessage(String message) {
         if (StringUtils.isEmpty(message)) {
-            throw new IllegalArgumentException("Error: message shouldn't be empty or null ");
+            throw new IllegalArgumentException("Message shouldn't be empty or null ");
         }
 
         String instructionMessage = message.substring(0, message.indexOf(' '));
 
         if (!instructionMessage.equals(MESSAGE_PREFIX)) {
-            throw new IllegalArgumentException("Error: message should start with: (" + MESSAGE_PREFIX + ")");
+            throw new IllegalArgumentException("Message should start with: (" + MESSAGE_PREFIX + ")");
         }
     }
 }

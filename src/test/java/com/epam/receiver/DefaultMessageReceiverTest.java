@@ -1,8 +1,10 @@
-package com.epam.test.receiver;
+package com.epam.receiver;
 
-import com.epam.receiver.MessageReceiver;
+import com.epam.parsers.InstructionMessageParser;
+import com.epam.queue.InstructionQueue;
 import com.epam.receiver.impl.DefaultMessageReceiver;
 import com.epam.validator.ValidationException;
+import com.epam.validator.InstructionMessageValidator;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +19,7 @@ public class DefaultMessageReceiverTest {
 
     @Before
     public void setUp() throws Exception {
-        messageReceiver = new DefaultMessageReceiver();
+        messageReceiver = new DefaultMessageReceiver(new InstructionMessageParser(), new InstructionMessageValidator(), new InstructionQueue());
     }
 
     @Test
@@ -34,7 +36,7 @@ public class DefaultMessageReceiverTest {
         messageReceiver.receive(MESSAGE_WITH_INCORRECT_PREFIX);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ValidationException.class)
     public void shouldThrowExceptionWhenMessageContainIncorrectInstructionCode() throws ValidationException {
         messageReceiver.receive(MESSAGE_WITH_INCORRECT_INSTRUCTION_CODE);
     }

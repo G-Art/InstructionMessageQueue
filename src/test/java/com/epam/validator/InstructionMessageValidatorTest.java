@@ -1,9 +1,6 @@
-package com.epam.test.validator;
+package com.epam.validator;
 
 import com.epam.data.InstructionMessage;
-import com.epam.validator.ValidationException;
-import com.epam.validator.Validator;
-import com.epam.validator.impl.InstructionMessageValidator;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -15,7 +12,7 @@ import java.util.Date;
 
 public class InstructionMessageValidatorTest {
 
-    private Validator<InstructionMessage> underTest;
+    private InstructionMessageValidator messageValidator;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -23,13 +20,13 @@ public class InstructionMessageValidatorTest {
 
     @Before
     public void setUp() throws ParseException {
-        underTest = new InstructionMessageValidator();
+        messageValidator = new InstructionMessageValidator();
     }
 
     @Test
     public void shouldAcceptWhenMessageIsCorrect() throws ValidationException {
         try {
-            underTest.validate(createCorrectInstructionMessage());
+            messageValidator.validate(createCorrectInstructionMessage());
         } catch (Throwable throwable) {
             Assert.fail(throwable.getMessage());
         }
@@ -37,38 +34,38 @@ public class InstructionMessageValidatorTest {
 
     @Test
     public void shouldThrowExceptionWhenMessageWithIncorrectInstructionType() throws ValidationException {
-        expect(ValidationException.class, "Error InstructionType field is empty or null");
-        underTest.validate(createMessageWithIncorrectInstructionType());
+        expect(ValidationException.class, "InstructionType field is empty or null");
+        messageValidator.validate(createMessageWithIncorrectInstructionType());
     }
 
     @Test
     public void shouldThrowExceptionWhenMessageWithIncorrectProductCode() throws ValidationException {
-        expect(ValidationException.class, "Error invalid ProductCode");
-        underTest.validate(createMessageWithIncorrectProductCode());
+        expect(ValidationException.class, "Invalid ProductCode");
+        messageValidator.validate(createMessageWithIncorrectProductCode());
     }
 
     @Test
     public void shouldThrowExceptionWhenMessageWithIncorrectQuantity() throws ValidationException {
-        expect(ValidationException.class, "Error quantity must be positive");
-        underTest.validate(createMessageWithIncorrectQuantity());
+        expect(ValidationException.class, "Quantity must be positive");
+        messageValidator.validate(createMessageWithIncorrectQuantity());
     }
 
     @Test
     public void shouldThrowExceptionWhenMessageWithIncorrectUOM() throws ValidationException {
-        expect(ValidationException.class, "Error uom must be positive and less then 256");
-        underTest.validate(createMessageWithIncorrectUOM());
+        expect(ValidationException.class, "UOM must be less then: 256. Actual UOM is:1000");
+        messageValidator.validate(createMessageWithIncorrectUOM());
     }
 
     @Test
     public void shouldThrowExceptionWhenMessageWithNullTimestamp() throws ValidationException {
-        expect(ValidationException.class, "Error date mustn't be null");
-        underTest.validate(createMessageWithNullTimestamp());
+        expect(ValidationException.class, "Date mustn't be null");
+        messageValidator.validate(createMessageWithNullTimestamp());
     }
 
     @Test
     public void shouldThrowExceptionWhenMessageWithIncorrectTimestamp() throws ValidationException {
-        expect(ValidationException.class, "Error date is not valid");
-        underTest.validate(createMessageWithIncorrectTimestamp());
+        expect(ValidationException.class, "Date is not valid");
+        messageValidator.validate(createMessageWithIncorrectTimestamp());
     }
 
 
@@ -122,7 +119,7 @@ public class InstructionMessageValidatorTest {
 
     private InstructionMessage createMessageWithIncorrectTimestamp() {
         InstructionMessage message = createCorrectInstructionMessage();
-        message.setTimestamp(new Date(-100));
+        message.setTimestamp(new Date(System.currentTimeMillis()+1000));
         return message;
     }
 

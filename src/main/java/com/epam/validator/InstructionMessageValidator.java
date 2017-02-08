@@ -1,4 +1,4 @@
-package com.epam.validator.impl;
+package com.epam.validator;
 
 import com.epam.data.InstructionMessage;
 import com.epam.queue.MessageType;
@@ -16,7 +16,7 @@ public class InstructionMessageValidator{
     private final int    MAX_VALUE_UOM        = 256;
     private final int    MIN_VALUE_QUANTITY   = 0;
 
-    private Pattern pattern = Pattern.compile(PRODUCT_CODE_PATTERN);
+    private final Pattern pattern = Pattern.compile(PRODUCT_CODE_PATTERN);
 
     public void validate(InstructionMessage instructionMessage) throws ValidationException {
 
@@ -35,8 +35,12 @@ public class InstructionMessageValidator{
     }
 
     private void validateUom(InstructionMessage instructionMessage) throws ValidationException {
-        if (instructionMessage.getUom() <= 0 || instructionMessage.getUom() > MAX_VALUE_UOM) {
-            throw new ValidationException("UOM must be positive and less then " + MAX_VALUE_UOM);
+        if (instructionMessage.getUom() <= 0) {
+            throw new ValidationException("UOM must be positive");
+        }
+
+        if (instructionMessage.getUom() > MAX_VALUE_UOM) {
+            throw new ValidationException("UOM must be less then: " + MAX_VALUE_UOM + ". Actual UOM is:" + instructionMessage.getUom());
         }
     }
 
@@ -75,7 +79,7 @@ public class InstructionMessageValidator{
             throw new ValidationException("Date mustn't be null");
         }
 
-        if (instructionMessage.getTimestamp().before(new Date(0)) || instructionMessage.getTimestamp().after(new Date())) {
+        if (instructionMessage.getTimestamp().after(new Date())) {
             throw new ValidationException("Date is not valid");
         }
     }

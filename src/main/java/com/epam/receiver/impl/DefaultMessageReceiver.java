@@ -5,7 +5,7 @@ import com.epam.parsers.InstructionMessageParser;
 import com.epam.queue.InstructionQueue;
 import com.epam.receiver.MessageReceiver;
 import com.epam.validator.ValidationException;
-import com.epam.validator.impl.InstructionMessageValidator;
+import com.epam.validator.InstructionMessageValidator;
 
 public class DefaultMessageReceiver implements MessageReceiver {
 

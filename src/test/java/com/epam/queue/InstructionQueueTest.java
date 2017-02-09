@@ -3,7 +3,6 @@ package com.epam.queue;
 import com.epam.data.InstructionMessage;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -106,7 +105,7 @@ public class InstructionQueueTest {
     private InstructionMessage createInstructionMessage(String instructionType, String productCode, int quantity,
                                                         int uom, Date date) {
         InstructionMessage message = new InstructionMessage();
-        message.setInstructionType(instructionType);
+        message.setInstructionType(MessageType.valueOf(instructionType));
         message.setProductCode(productCode);
         message.setUom(uom);
         message.setQuantity(quantity);

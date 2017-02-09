@@ -2,7 +2,7 @@ package com.epam.queue;
 
 import com.epam.data.InstructionMessage;
 
-import java.util.Comparator;
+import java.util.Optional;
 import java.util.PriorityQueue;
 
 public class InstructionQueue {
@@ -12,14 +12,14 @@ public class InstructionQueue {
     private int sequence = 0;
 
     private class MessageWrapper {
-        private InstructionMessage message;
+        private Optional<InstructionMessage> message;
         private Integer order;
 
         public InstructionMessage getMessage() {
-            return message;
+            return message.get();
         }
 
-        public void setMessage(InstructionMessage message) {
+        public void setMessage(Optional<InstructionMessage> message) {
             this.message = message;
         }
 
@@ -33,31 +33,21 @@ public class InstructionQueue {
     }
 
     public InstructionQueue() {
-        this.queue = new PriorityQueue<>(new Comparator<MessageWrapper>() {
-            @Override
-            public int compare(MessageWrapper messageWrapperLeft, MessageWrapper messageWrapperRight) {
+        this.queue = new PriorityQueue<>((messageWrapperLeft, messageWrapperRight) -> {
 
-                int message1 = getPriorityValue(messageWrapperLeft.getMessage());
-                int message2 = getPriorityValue(messageWrapperRight.getMessage());
+            int messagePriority1 = messageWrapperLeft.getMessage().getInstructionType().getPriority();
+            int messagePriority2 = messageWrapperRight.getMessage().getInstructionType().getPriority();
 
-                if(Integer.compare(message2, message1) == 0 ){
-                   return Integer.compare(messageWrapperLeft.getOrder(), messageWrapperRight.getOrder());
-                }
-                return Integer.compare(message2, message1);
+            if(Integer.compare(messagePriority2, messagePriority1) == 0 ){
+               return Integer.compare(messageWrapperLeft.getOrder(), messageWrapperRight.getOrder());
             }
-
-            private int getPriorityValue(InstructionMessage instructionMessage) {
-                return MessageType.valueOf(instructionMessage.getInstructionType()).getPriority();
-            }
+            return Integer.compare(messagePriority2, messagePriority1);
         });
     }
 
 
     public void enqueue(InstructionMessage message) {
-        if (message == null) {
-            throw new NullPointerException("Error: Instruction Message shouldn't be null");
-        }
-        addIntoQueue(message);
+        addIntoQueue(Optional.of(message));
     }
 
     public InstructionMessage dequeue() {
@@ -76,7 +66,7 @@ public class InstructionQueue {
         return queue.isEmpty();
     }
 
-    private void addIntoQueue(InstructionMessage message) {
+    private void addIntoQueue(Optional<InstructionMessage> message) {
         MessageWrapper messageWrapper = new MessageWrapper();
         messageWrapper.setMessage(message);
         messageWrapper.setOrder(sequence++);

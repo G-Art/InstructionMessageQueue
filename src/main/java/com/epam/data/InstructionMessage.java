@@ -1,10 +1,13 @@
 package com.epam.data;
 
+import com.epam.queue.MessageType;
+
 import java.util.Date;
+import java.util.Optional;
 
 public class InstructionMessage {
 
-    private String instructionType;
+    private Optional<MessageType> instructionType;
     private String productCode;
     private int    quantity;
     private int    uom;
@@ -14,12 +17,12 @@ public class InstructionMessage {
     public InstructionMessage() {
     }
 
-    public String getInstructionType() {
-        return instructionType;
+    public MessageType getInstructionType() {
+        return instructionType.orElseThrow(NullPointerException::new);
     }
 
-    public void setInstructionType(String instructionType) {
-        this.instructionType = instructionType;
+    public void setInstructionType(MessageType instructionType) {
+        this.instructionType = Optional.of(instructionType);
     }
 
     public String getProductCode() {

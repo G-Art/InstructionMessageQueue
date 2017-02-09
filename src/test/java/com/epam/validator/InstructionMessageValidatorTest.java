@@ -1,6 +1,7 @@
 package com.epam.validator;
 
 import com.epam.data.InstructionMessage;
+import com.epam.queue.MessageType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -76,7 +77,7 @@ public class InstructionMessageValidatorTest {
 
     private InstructionMessage createCorrectInstructionMessage() {
         InstructionMessage message = new InstructionMessage();
-        message.setInstructionType("A");
+        message.setInstructionType(MessageType.A);
         message.setProductCode("AZ19");
         message.setUom(11);
         message.setQuantity(11);
@@ -86,7 +87,7 @@ public class InstructionMessageValidatorTest {
 
     private InstructionMessage createMessageWithIncorrectInstructionType() {
         InstructionMessage message = createCorrectInstructionMessage();
-        message.setInstructionType("");
+        message.setInstructionType(null);
         return message;
     }
 

@@ -9,6 +9,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.text.ParseException;
+
 public class DefaultMessageReceiverTest {
 
     private MessageReceiver messageReceiver;
@@ -32,17 +34,17 @@ public class DefaultMessageReceiverTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenMessageContainIncorrectPrefix() throws ValidationException {
+    public void shouldThrowExceptionWhenMessageContainIncorrectPrefix() throws ValidationException, ParseException {
         messageReceiver.receive(MESSAGE_WITH_INCORRECT_PREFIX);
     }
 
     @Test(expected = ValidationException.class)
-    public void shouldThrowExceptionWhenMessageContainIncorrectInstructionCode() throws ValidationException {
+    public void shouldThrowExceptionWhenMessageContainIncorrectInstructionCode() throws ValidationException, ParseException {
         messageReceiver.receive(MESSAGE_WITH_INCORRECT_INSTRUCTION_CODE);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenMessageIsNull() throws ValidationException {
+    public void shouldThrowExceptionWhenMessageIsNull() throws ValidationException, ParseException {
         messageReceiver.receive(null);
     }
 }

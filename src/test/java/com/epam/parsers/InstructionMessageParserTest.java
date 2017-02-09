@@ -34,32 +34,32 @@ public class InstructionMessageParserTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionIfInstructionMessagePrefixIsEmpty() {
+    public void shouldThrowExceptionIfInstructionMessagePrefixIsEmpty() throws ParseException {
         messageParser.parse("A MZ89 5678 50 2015-03-05T10:04:56.012Z");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionIfWrongInstructionMessagePrefix() {
+    public void shouldThrowExceptionIfWrongInstructionMessagePrefix() throws ParseException {
         messageParser.parse("InstructionMessage123 A MZ89 5678 50 2015-03-05T10:04:56.012Z");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionIfInstructionMessageIsEmpty() {
+    public void shouldThrowExceptionIfInstructionMessageIsEmpty() throws ParseException {
         messageParser.parse("");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionIfInstructionMessageIsNull() {
+    public void shouldThrowExceptionIfInstructionMessageIsNull() throws ParseException {
         messageParser.parse(null);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionIfTimestampIsEmpty() {
+    public void shouldThrowExceptionIfTimestampIsEmpty() throws ParseException {
         messageParser.parse("InstructionMessage123 A MZ89 5678 50");
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionIfWrongTimestampFormat() {
+    public void shouldThrowExceptionIfWrongTimestampFormat() throws ParseException {
         messageParser.parse("InstructionMessage123 A MZ89 5678 50 2015/03/05T10:04:56.012Z");
     }
 }

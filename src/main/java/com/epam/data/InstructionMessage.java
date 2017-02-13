@@ -9,9 +9,9 @@ public class InstructionMessage {
 
     private Optional<MessageType> instructionType;
     private String productCode;
-    private int    quantity;
-    private int    uom;
-    private Date   timestamp;
+    private int quantity;
+    private int uom;
+    private Date timestamp;
 
 
     public InstructionMessage() {

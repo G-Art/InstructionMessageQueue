@@ -1,6 +1,7 @@
 package com.epam.parsers;
 
 import com.epam.data.InstructionMessage;
+import com.epam.queue.MessageType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,6 +9,7 @@ import org.junit.Test;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import static com.epam.queue.MessageType.A;
 import static org.junit.Assert.assertEquals;
 
 public class InstructionMessageParserTest {
@@ -24,9 +26,10 @@ public class InstructionMessageParserTest {
     }
 
     @Test
-    public void shouldReturnCorrectInstructionMessage() throws ParseException {
+    public void shouldCorrectlyParseInstructionMessage() throws ParseException {
         InstructionMessage instructionMessage = messageParser.parse(CORRECT_MESSAGE);
-        assertEquals("A", instructionMessage.getInstructionType());
+
+        assertEquals(A, instructionMessage.getInstructionType());
         assertEquals("MZ89", instructionMessage.getProductCode());
         assertEquals(5678, instructionMessage.getQuantity());
         assertEquals(50, instructionMessage.getUom());
@@ -38,28 +41,23 @@ public class InstructionMessageParserTest {
         messageParser.parse("A MZ89 5678 50 2015-03-05T10:04:56.012Z");
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionIfWrongInstructionMessagePrefix() throws ParseException {
-        messageParser.parse("InstructionMessage123 A MZ89 5678 50 2015-03-05T10:04:56.012Z");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ArrayIndexOutOfBoundsException.class)
     public void shouldThrowExceptionIfInstructionMessageIsEmpty() throws ParseException {
         messageParser.parse("");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowExceptionIfInstructionMessageIsNull() throws ParseException {
         messageParser.parse(null);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ArrayIndexOutOfBoundsException.class)
     public void shouldThrowExceptionIfTimestampIsEmpty() throws ParseException {
-        messageParser.parse("InstructionMessage123 A MZ89 5678 50");
+        messageParser.parse("InstructionMessage A MZ89 5678 50");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = ParseException.class)
     public void shouldThrowExceptionIfWrongTimestampFormat() throws ParseException {
-        messageParser.parse("InstructionMessage123 A MZ89 5678 50 2015/03/05T10:04:56.012Z");
+        messageParser.parse("InstructionMessage A MZ89 5678 50 2015/03/05T10:04:56.012Z");
     }
 }

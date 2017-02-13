@@ -9,42 +9,22 @@ public class InstructionQueue {
 
     private PriorityQueue<MessageWrapper> queue;
 
-    private int sequence = 0;
-
-    private class MessageWrapper {
-        private Optional<InstructionMessage> message;
-        private Integer order;
-
-        public InstructionMessage getMessage() {
-            return message.get();
-        }
-
-        public void setMessage(Optional<InstructionMessage> message) {
-            this.message = message;
-        }
-
-        public Integer getOrder() {
-            return order;
-        }
-
-        public void setOrder(Integer order) {
-            this.order = order;
-        }
-    }
+    private int orderSequence;
 
     public InstructionQueue() {
+        this.orderSequence = 0;
+
         this.queue = new PriorityQueue<>((messageWrapperLeft, messageWrapperRight) -> {
 
             int messagePriority1 = messageWrapperLeft.getMessage().getInstructionType().getPriority();
             int messagePriority2 = messageWrapperRight.getMessage().getInstructionType().getPriority();
 
-            if(Integer.compare(messagePriority2, messagePriority1) == 0 ){
-               return Integer.compare(messageWrapperLeft.getOrder(), messageWrapperRight.getOrder());
+            if (Integer.compare(messagePriority2, messagePriority1) == 0) {
+                return Integer.compare(messageWrapperLeft.getOrder(), messageWrapperRight.getOrder());
             }
             return Integer.compare(messagePriority2, messagePriority1);
         });
     }
-
 
     public void enqueue(InstructionMessage message) {
         addIntoQueue(Optional.of(message));
@@ -69,7 +49,28 @@ public class InstructionQueue {
     private void addIntoQueue(Optional<InstructionMessage> message) {
         MessageWrapper messageWrapper = new MessageWrapper();
         messageWrapper.setMessage(message);
-        messageWrapper.setOrder(sequence++);
+        messageWrapper.setOrder(orderSequence++);
         queue.add(messageWrapper);
+    }
+
+    private class MessageWrapper {
+        private Optional<InstructionMessage> message;
+        private Integer order;
+
+        public InstructionMessage getMessage() {
+            return message.get();
+        }
+
+        public void setMessage(Optional<InstructionMessage> message) {
+            this.message = message;
+        }
+
+        public Integer getOrder() {
+            return order;
+        }
+
+        public void setOrder(Integer order) {
+            this.order = order;
+        }
     }
 }

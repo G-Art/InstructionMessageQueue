@@ -64,7 +64,8 @@ public class InstructionMessageValidator {
 
     private void validateTimestamp(String timestamp) throws ValidationException {
         try {
-            if (DateTimeUtils.parse(timestamp).after(new Date())) {
+            Date dateTime = DateTimeUtils.parse(timestamp);
+            if (dateTime.before(new Date(0)) || dateTime.after(new Date())) {
                 throw new ValidationException("Date is not valid: timestamp shouldn't be in future");
             }
         } catch (ParseException e) {

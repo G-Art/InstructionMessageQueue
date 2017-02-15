@@ -65,8 +65,13 @@ public class InstructionMessageValidatorTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithIncorrectTimestamp() throws ValidationException {
+    public void shouldThrowExceptionWhenMessageWithTimestampInFuture() throws ValidationException {
         messageValidator.validate("InstructionMessage A MZ89 5678 50 3015-03-05T10:04:56.012Z");
+    }
+
+    @Test(expected = ValidationException.class)
+    public void shouldThrowExceptionWhenMessageWithTimestampInPast() throws ValidationException {
+        messageValidator.validate("InstructionMessage A MZ89 5678 50 1015-03-05T10:04:56.012Z");
     }
 
 }

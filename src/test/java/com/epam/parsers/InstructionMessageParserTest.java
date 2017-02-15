@@ -2,6 +2,7 @@ package com.epam.parsers;
 
 import com.epam.data.InstructionMessage;
 import com.epam.queue.MessageType;
+import com.epam.utils.DateTimeUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,10 +15,6 @@ import static org.junit.Assert.assertEquals;
 
 public class InstructionMessageParserTest {
 
-    private static final String CORRECT_MESSAGE = "InstructionMessage A MZ89 5678 50 2015-03-05T10:04:56.012Z";
-
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
     private InstructionMessageParser messageParser;
 
     @Before
@@ -27,13 +24,13 @@ public class InstructionMessageParserTest {
 
     @Test
     public void shouldCorrectlyParseInstructionMessage() throws ParseException {
-        InstructionMessage instructionMessage = messageParser.parse(CORRECT_MESSAGE);
+        InstructionMessage instructionMessage = messageParser.parse("InstructionMessage A MZ89 5678 50 2015-03-05T10:04:56.012Z");
 
         assertEquals(A, instructionMessage.getInstructionType());
         assertEquals("MZ89", instructionMessage.getProductCode());
         assertEquals(5678, instructionMessage.getQuantity());
         assertEquals(50, instructionMessage.getUom());
-        assertEquals(dateFormat.parse("2015-03-05T10:04:56.012Z"), instructionMessage.getTimestamp());
+        assertEquals(DateTimeUtils.parse("2015-03-05T10:04:56.012Z"), instructionMessage.getTimestamp());
     }
 
     @Test(expected = IllegalArgumentException.class)

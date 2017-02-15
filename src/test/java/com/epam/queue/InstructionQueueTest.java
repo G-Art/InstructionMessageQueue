@@ -25,7 +25,7 @@ public class InstructionQueueTest {
 
     @Test
     public void shouldReturnCorrectOrderedMessages() throws ParseException {
-        List<InstructionMessage> expectOrderedMessages = defineQueue();
+        List<InstructionMessage> expectOrderedMessages = enqueue6MessagesToQueue();
         for (InstructionMessage expectOrderedMessage : expectOrderedMessages) {
             assertSame(expectOrderedMessage, instructionQueue.dequeue());
         }
@@ -35,18 +35,18 @@ public class InstructionQueueTest {
     public void shouldPeekMessageWithHighestPriority() throws ParseException {
         InstructionMessage expectMessage = createInstructionMessage(A, "MZ89", 5678, 50, parse("2015-03-05T10:04:51.012Z"));
         instructionQueue.enqueue(expectMessage);
-        defineQueue();
+        enqueue6MessagesToQueue();
         assertEquals(expectMessage, instructionQueue.peek());
     }
 
     @Test
-    public void shouldReturnCorrectCount() throws ParseException {
-        defineQueue();
+    public void shouldReturnCorrectCountIfMessagesEnqueued() throws ParseException {
+        enqueue6MessagesToQueue();
         assertEquals(6, instructionQueue.count());
     }
 
     @Test
-    public void shouldReturnZeroCount() {
+    public void shouldReturnZeroCountIfNoOneMessagesEnqueued() {
         assertEquals(0, instructionQueue.count());
     }
 
@@ -57,7 +57,7 @@ public class InstructionQueueTest {
 
     @Test
     public void shouldReturnFalseIfQueueIsNotEmpty() throws ParseException {
-        defineQueue();
+        enqueue6MessagesToQueue();
         assertFalse(instructionQueue.isEmpty());
     }
 
@@ -71,7 +71,7 @@ public class InstructionQueueTest {
         instructionQueue.dequeue();
     }
 
-    private List<InstructionMessage> defineQueue() throws ParseException {
+    private List<InstructionMessage> enqueue6MessagesToQueue() throws ParseException {
 
         InstructionMessage messageAType = createInstructionMessage(A, "MZ86", 1111, 11,
                 parse("2015-03-05T10:04:54.012Z"));

@@ -62,7 +62,7 @@ public class InstructionMessageValidatorTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithoutIncorrectUOM() throws ValidationException {
+    public void shouldThrowExceptionWhenMessageWithoutUOM() throws ValidationException {
         messageValidator.validate("InstructionMessage A MZ89 5678 2015-03-05T10:04:56.012Z");
     }
 

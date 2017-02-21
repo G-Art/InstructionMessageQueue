@@ -1,10 +1,10 @@
 package com.epam.validator;
 
 import com.epam.queue.MessageType;
-import com.epam.utils.DateTimeUtils;
 import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,15 +13,18 @@ public class InstructionMessageValidator {
 
     private static final String MESSAGE_PREFIX = "InstructionMessage";
 
-    private final String PRODUCT_CODE_PATTERN = "^[A-Z]{2}\\d{2}$";
-    private final int MAX_VALUE_UOM = 256;
-    private final int MIN_VALUE_QUANTITY = 0;
+    private static final String PRODUCT_CODE_PATTERN = "^[A-Z]{2}\\d{2}$";
+    private static final int MAX_VALUE_UOM = 256;
+    private static final int MIN_VALUE_QUANTITY = 0;
 
-    private final Pattern pattern = Pattern.compile(PRODUCT_CODE_PATTERN);
+    private static final Pattern pattern = Pattern.compile(PRODUCT_CODE_PATTERN);
 
-    public void validate(String instructionMessage) throws ValidationException {
+    private String dateFormat;
+
+
+    public String [] validate(String message) throws ValidationException {
         try {
-            String[] splittedMessage = instructionMessage.split(" ");
+            String[] splittedMessage = message.split(" ");
 
             validateInstructionMessagePrefix(splittedMessage[0]);
             validateMessageType(splittedMessage[1]);
@@ -29,6 +32,8 @@ public class InstructionMessageValidator {
             validateQuantity(splittedMessage[3]);
             validateUom(splittedMessage[4]);
             validateTimestamp(splittedMessage[5]);
+
+            return splittedMessage;
         } catch (RuntimeException e) {
             throw new ValidationException(e);
         }
@@ -48,7 +53,7 @@ public class InstructionMessageValidator {
         Integer intUom = Integer.parseInt(uom);
 
         if (intUom < 0) {
-            throw new ValidationException("UOM must be grater then 0");
+            throw new ValidationException("UOM must be grater then 0" + ". Actual UOM is:" + intUom);
         }
 
         if (intUom >= MAX_VALUE_UOM) {
@@ -64,7 +69,7 @@ public class InstructionMessageValidator {
 
     private void validateTimestamp(String timestamp) throws ValidationException {
         try {
-            Date dateTime = DateTimeUtils.parse(timestamp);
+            Date dateTime = new SimpleDateFormat(dateFormat).parse(timestamp);
             if (dateTime.before(new Date(0)) || dateTime.after(new Date())) {
                 throw new ValidationException("Date is not valid: timestamp shouldn't be in future");
             }
@@ -86,5 +91,9 @@ public class InstructionMessageValidator {
     private boolean isValidProductCode(String productCode) {
         Matcher productCodeMatcher = pattern.matcher(productCode);
         return productCodeMatcher.matches();
+    }
+
+    public void setDateFormat(String dateFormat) {
+        this.dateFormat = dateFormat;
     }
 }

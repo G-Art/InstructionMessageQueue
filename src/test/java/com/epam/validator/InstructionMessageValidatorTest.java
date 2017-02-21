@@ -5,18 +5,30 @@ import org.junit.Test;
 
 import java.text.ParseException;
 
+import static org.junit.Assert.assertEquals;
+
 public class InstructionMessageValidatorTest {
+
+    private final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
     private InstructionMessageValidator messageValidator;
 
     @Before
     public void setUp() throws ParseException {
         messageValidator = new InstructionMessageValidator();
+        messageValidator.setDateFormat(DATE_FORMAT);
     }
 
     @Test
     public void shouldValidateWhenMessageIsCorrect() throws ValidationException {
-        messageValidator.validate("InstructionMessage A MZ89 5678 50 2015-03-05T10:04:56.012Z");
+        String [] splitedMessage = messageValidator.validate("InstructionMessage A MZ89 5678 50 2015-03-05T10:04:56.012Z");
+        assertEquals(splitedMessage[0], "InstructionMessage");
+        assertEquals(splitedMessage[1], "A");
+        assertEquals(splitedMessage[2], "MZ89");
+        assertEquals(splitedMessage[3], "5678");
+        assertEquals(splitedMessage[4], "50");
+        assertEquals(splitedMessage[5], "2015-03-05T10:04:56.012Z");
+
     }
 
     @Test(expected = ValidationException.class)

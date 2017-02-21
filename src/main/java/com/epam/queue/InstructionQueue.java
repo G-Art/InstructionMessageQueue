@@ -1,7 +1,5 @@
 package com.epam.queue;
 
-import com.epam.data.InstructionMessage;
-
 import java.util.Optional;
 import java.util.PriorityQueue;
 
@@ -16,18 +14,19 @@ public class InstructionQueue {
 
         this.queue = new PriorityQueue<>((messageWrapperLeft, messageWrapperRight) -> {
 
-            int messagePriority1 = messageWrapperLeft.getMessage().getInstructionType().getPriority();
-            int messagePriority2 = messageWrapperRight.getMessage().getInstructionType().getPriority();
+            MessageTypePriority messagePriorityLeft = messageWrapperLeft.getMessage().getInstructionType().getPriority();
+            MessageTypePriority messagePriorityRight = messageWrapperRight.getMessage().getInstructionType().getPriority();
 
-            if (Integer.compare(messagePriority2, messagePriority1) == 0) {
+            int comparingResult = messagePriorityLeft.compareTo(messagePriorityRight);
+            if (comparingResult == 0) {
                 return Integer.compare(messageWrapperLeft.getOrder(), messageWrapperRight.getOrder());
             }
-            return Integer.compare(messagePriority2, messagePriority1);
+            return comparingResult;
         });
     }
 
     public void enqueue(InstructionMessage message) {
-        addIntoQueue(Optional.of(message));
+        addIntoQueue(message);
     }
 
     public InstructionMessage dequeue() {
@@ -35,7 +34,7 @@ public class InstructionQueue {
     }
 
     public InstructionMessage peek() {
-        return queue.peek().getMessage();
+        return Optional.ofNullable(queue.peek()).orElseGet(MessageWrapper::new).getMessage();
     }
 
     public int count() {
@@ -46,7 +45,7 @@ public class InstructionQueue {
         return queue.isEmpty();
     }
 
-    private void addIntoQueue(Optional<InstructionMessage> message) {
+    private void addIntoQueue(InstructionMessage message) {
         MessageWrapper messageWrapper = new MessageWrapper();
         messageWrapper.setMessage(message);
         messageWrapper.setOrder(orderSequence++);
@@ -54,14 +53,14 @@ public class InstructionQueue {
     }
 
     private class MessageWrapper {
-        private Optional<InstructionMessage> message;
+        private InstructionMessage message;
         private Integer order;
 
         public InstructionMessage getMessage() {
-            return message.get();
+            return message;
         }
 
-        public void setMessage(Optional<InstructionMessage> message) {
+        public void setMessage(InstructionMessage message) {
             this.message = message;
         }
 

@@ -1,16 +1,20 @@
 package com.epam.queue;
 
+import static com.epam.queue.MessageTypePriority.HIGH;
+import static com.epam.queue.MessageTypePriority.LOW;
+import static com.epam.queue.MessageTypePriority.MEDIUM;
+
 public enum MessageType {
 
-    A(10), B(5), C(0), D(0);
+    A(HIGH), B(MEDIUM), C(LOW), D(LOW);
 
-    private int priority;
+    private MessageTypePriority priority;
 
-    MessageType(int priority) {
+    MessageType(MessageTypePriority priority) {
         this.priority = priority;
     }
 
-    public int getPriority() {
+    public MessageTypePriority getPriority() {
         return priority;
     }
 }

@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.epam.queue.message.InstructionMessage.DATE_FORMAT;
+import static com.epam.queue.message.InstructionMessage.*;
 import static java.lang.String.format;
 
 public class InstructionMessageValidator {
@@ -33,12 +33,12 @@ public class InstructionMessageValidator {
             String[] splittedMessage = message.split(" ");
 
             validateCountParameters(splittedMessage);
-            validateInstructionMessagePrefix(splittedMessage[0]);
-            validateMessageType(splittedMessage[1]);
-            validateProductCode(splittedMessage[2]);
-            validateQuantity(splittedMessage[3]);
-            validateUom(splittedMessage[4]);
-            validateTimestamp(splittedMessage[5]);
+            validateInstructionMessagePrefix(splittedMessage[INSTRUCTION_PREFIX_POSITION]);
+            validateMessageType(splittedMessage[INSTRUCTION_TYPE_POSITION]);
+            validateProductCode(splittedMessage[PRODUCT_CODE_POSITION]);
+            validateQuantity(splittedMessage[QUANTITY_POSITION]);
+            validateUom(splittedMessage[UOM_POSITION]);
+            validateTimestamp(splittedMessage[TIMESTAMP_POSITION]);
 
             return splittedMessage;
         } catch (RuntimeException e) {

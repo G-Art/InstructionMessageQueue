@@ -5,85 +5,87 @@ import org.junit.Test;
 
 import java.text.ParseException;
 
+import static com.epam.queue.message.InstructionMessage.*;
 import static org.junit.Assert.assertEquals;
 
 public class InstructionMessageValidatorTest {
 
-    private final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    public static final String CORRECT_MESSAGE = "InstructionMessage A MZ89 5678 50 2015-03-05T10:04:56.012Z";
+
+    public static final String MESSAGE_WITH_INCORRECT_TYPE = "InstructionMessage ! MZ89 5678 50 2015-03-05T10:04:56.012Z";
+    public static final String MESSAGE_WITH_PRODUCT_CODE_IN_LOWER_CASE = "InstructionMessage A mz89 5678 50 2015-03-05T10:04:56.012Z";
+    public static final String MESSAGE_WITH_INCORRECT_QUANTITY = "InstructionMessage A MZ89 -1 50 2015-03-05T10:04:56.012Z";
+    public static final String MESSAGE_WITH_UOM_GRATER_255 = "InstructionMessage A MZ89 5678 256 2015-03-05T10:04:56.012Z";
+
+    public static final String MESSAGE_WITHOUT_TYPE = "InstructionMessage MZ89 5678 50 2015-03-05T10:04:56.012Z";
+    public static final String MESSAGE_WITHOUT_PRODUCT_CODE = "InstructionMessage ! MZ89 5678 50 2015-03-05T10:04:56.012Z";
+    public static final String MESSAGE_WITHOUT_QUANTITY = "InstructionMessage A MZ89 50 2015-03-05T10:04:56.012Z";
+    public static final String MESSAGE_WITHOUT_UOM = "InstructionMessage A MZ89 5678 2015-03-05T10:04:56.012Z";
+    public static final String MESSAGE_WITHOUT_TIMESTAMP = "InstructionMessage A MZ89 5678 50";
 
     private InstructionMessageValidator messageValidator;
 
     @Before
     public void setUp() throws ParseException {
         messageValidator = new InstructionMessageValidator();
-        messageValidator.setDateFormat(DATE_FORMAT);
     }
 
     @Test
     public void shouldValidateWhenMessageIsCorrect() throws ValidationException {
-        String [] splitedMessage = messageValidator.validate("InstructionMessage A MZ89 5678 50 2015-03-05T10:04:56.012Z");
-        assertEquals(splitedMessage[0], "InstructionMessage");
-        assertEquals(splitedMessage[1], "A");
-        assertEquals(splitedMessage[2], "MZ89");
-        assertEquals(splitedMessage[3], "5678");
-        assertEquals(splitedMessage[4], "50");
-        assertEquals(splitedMessage[5], "2015-03-05T10:04:56.012Z");
+        String [] splitedMessage = messageValidator.validate(CORRECT_MESSAGE);
+
+        assertEquals(splitedMessage[INSTRUCTION_PREFIX_POSITION], "InstructionMessage");
+        assertEquals(splitedMessage[INSTRUCTION_TYPE_POSITION], "A");
+        assertEquals(splitedMessage[PRODUCT_CODE_POSITION], "MZ89");
+        assertEquals(splitedMessage[QUANTITY_POSITION], "5678");
+        assertEquals(splitedMessage[UOM_POSITION], "50");
+        assertEquals(splitedMessage[TIMESTAMP_POSITION], "2015-03-05T10:04:56.012Z");
 
     }
 
     @Test(expected = ValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithoutInstructionType() throws ValidationException {
-        messageValidator.validate("InstructionMessage MZ89 5678 50 2015-03-05T10:04:56.012Z");
+    public void shouldThrowExceptionWhenMessageWithoutInstructionType() {
+        messageValidator.validate(MESSAGE_WITHOUT_TYPE);
     }
 
     @Test(expected = ValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithIncorrectInstructionType() throws ValidationException {
-        messageValidator.validate("InstructionMessage Q MZ89 5678 50 2015-03-05T10:04:56.012Z");
+    public void shouldThrowExceptionWhenMessageWithIncorrectInstructionType() {
+        messageValidator.validate(MESSAGE_WITH_INCORRECT_TYPE);
     }
 
     @Test(expected = ValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithoutProductCode() throws ValidationException {
-        messageValidator.validate("InstructionMessage A 5678 50 2015-03-05T10:04:56.012Z");
+    public void shouldThrowExceptionWhenMessageWithoutProductCode() {
+        messageValidator.validate(MESSAGE_WITHOUT_PRODUCT_CODE);
     }
 
     @Test(expected = ValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithIncorrectProductCode() throws ValidationException {
-        messageValidator.validate("InstructionMessage A 11111111 5678 50 2015-03-05T10:04:56.012Z");
+    public void shouldThrowExceptionWhenMessageWithIncorrectProductCode() {
+        messageValidator.validate(MESSAGE_WITH_PRODUCT_CODE_IN_LOWER_CASE);
     }
 
     @Test(expected = ValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithoutQuantity() throws ValidationException {
-        messageValidator.validate("InstructionMessage A MZ89 50 2015-03-05T10:04:56.012Z");
+    public void shouldThrowExceptionWhenMessageWithoutQuantity() {
+        messageValidator.validate(MESSAGE_WITHOUT_QUANTITY);
     }
 
     @Test(expected = ValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithIncorrectQuantity() throws ValidationException {
-        messageValidator.validate("InstructionMessage A MZ89 -5 50 2015-03-05T10:04:56.012Z");
+    public void shouldThrowExceptionWhenMessageWithIncorrectQuantity() {
+        messageValidator.validate(MESSAGE_WITH_INCORRECT_QUANTITY);
     }
 
     @Test(expected = ValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithoutUOM() throws ValidationException {
-        messageValidator.validate("InstructionMessage A MZ89 5678 2015-03-05T10:04:56.012Z");
+    public void shouldThrowExceptionWhenMessageWithoutUOM() {
+        messageValidator.validate(MESSAGE_WITHOUT_UOM);
     }
 
     @Test(expected = ValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithIncorrectUOM() throws ValidationException {
-        messageValidator.validate("InstructionMessage A MZ89 5678 1000 2015-03-05T10:04:56.012Z");
+    public void shouldThrowExceptionWhenMessageWithIncorrectUOM() {
+        messageValidator.validate(MESSAGE_WITH_UOM_GRATER_255);
     }
 
     @Test(expected = ValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithoutTimestamp() throws ValidationException {
-        messageValidator.validate("InstructionMessage A MZ89 5678 50 ");
-    }
-
-    @Test(expected = ValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithTimestampInFuture() throws ValidationException {
-        messageValidator.validate("InstructionMessage A MZ89 5678 50 3015-03-05T10:04:56.012Z");
-    }
-
-    @Test(expected = ValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithTimestampInPast() throws ValidationException {
-        messageValidator.validate("InstructionMessage A MZ89 5678 50 1015-03-05T10:04:56.012Z");
+    public void shouldThrowExceptionWhenMessageWithoutTimestamp() {
+        messageValidator.validate(MESSAGE_WITHOUT_TIMESTAMP);
     }
 
 }

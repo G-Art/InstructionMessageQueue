@@ -1,5 +1,8 @@
 package com.epam.queue;
 
+import com.epam.queue.message.InstructionMessage;
+import com.epam.queue.message.MessageTypePriority;
+
 import java.util.Optional;
 import java.util.PriorityQueue;
 
@@ -26,7 +29,7 @@ public class InstructionQueue {
     }
 
     public void enqueue(InstructionMessage message) {
-        addIntoQueue(message);
+        queue.add(new MessageWrapper(message, orderSequence++));
     }
 
     public InstructionMessage dequeue() {
@@ -34,7 +37,8 @@ public class InstructionQueue {
     }
 
     public InstructionMessage peek() {
-        return Optional.ofNullable(queue.peek()).orElseGet(MessageWrapper::new).getMessage();
+        MessageWrapper messageWrapper = queue.peek();
+        return messageWrapper != null? messageWrapper.getMessage(): null;
     }
 
     public int count() {
@@ -45,31 +49,23 @@ public class InstructionQueue {
         return queue.isEmpty();
     }
 
-    private void addIntoQueue(InstructionMessage message) {
-        MessageWrapper messageWrapper = new MessageWrapper();
-        messageWrapper.setMessage(message);
-        messageWrapper.setOrder(orderSequence++);
-        queue.add(messageWrapper);
-    }
 
-    private class MessageWrapper {
-        private InstructionMessage message;
-        private Integer order;
+    private final class MessageWrapper {
+        private final InstructionMessage message;
+        private final Integer order;
+
+        public MessageWrapper(InstructionMessage message, Integer order) {
+            this.message = message;
+            this.order = order;
+        }
 
         public InstructionMessage getMessage() {
             return message;
-        }
-
-        public void setMessage(InstructionMessage message) {
-            this.message = message;
         }
 
         public Integer getOrder() {
             return order;
         }
 
-        public void setOrder(Integer order) {
-            this.order = order;
-        }
     }
 }

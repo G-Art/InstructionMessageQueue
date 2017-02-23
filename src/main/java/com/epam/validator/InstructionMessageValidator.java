@@ -1,6 +1,6 @@
 package com.epam.validator;
 
-import com.epam.queue.MessageType;
+import com.epam.queue.message.MessageType;
 import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
@@ -9,23 +9,30 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.epam.queue.message.InstructionMessage.DATE_FORMAT;
+import static java.lang.String.format;
+
 public class InstructionMessageValidator {
+
+    private static final String VALIDATION_ERROR_MESSAGE = "Validation error: %s";
 
     private static final String MESSAGE_PREFIX = "InstructionMessage";
 
     private static final String PRODUCT_CODE_PATTERN = "^[A-Z]{2}\\d{2}$";
     private static final int MAX_VALUE_UOM = 256;
+    private static final int MIN_VALUE_UOM = 0;
     private static final int MIN_VALUE_QUANTITY = 0;
+
+    private static final int MESSAGE_PARAMETER_COUNT = 6;
 
     private static final Pattern pattern = Pattern.compile(PRODUCT_CODE_PATTERN);
 
-    private String dateFormat;
 
-
-    public String [] validate(String message) throws ValidationException {
+    public String [] validate(String message){
         try {
             String[] splittedMessage = message.split(" ");
 
+            validateCountParameters(splittedMessage);
             validateInstructionMessagePrefix(splittedMessage[0]);
             validateMessageType(splittedMessage[1]);
             validateProductCode(splittedMessage[2]);
@@ -39,52 +46,51 @@ public class InstructionMessageValidator {
         }
     }
 
+    private void validateCountParameters(String[] splittedMessage){
+        if (splittedMessage.length != MESSAGE_PARAMETER_COUNT) {
+            throw new ValidationException(format(VALIDATION_ERROR_MESSAGE, "data count is not consistent"));
+        }
+    }
+
+
     private void validateMessageType(String messageType) {
         MessageType.valueOf(messageType);
     }
 
-    private void validateQuantity(String quantity) throws ValidationException {
+    private void validateQuantity(String quantity){
         if (Integer.valueOf(quantity) < MIN_VALUE_QUANTITY) {
-            throw new ValidationException("Quantity must be grater then " + MIN_VALUE_QUANTITY);
+            throw new ValidationException(format(VALIDATION_ERROR_MESSAGE, "quantity is not valid"));
         }
     }
 
     private void validateUom(String uom) throws ValidationException {
         Integer intUom = Integer.parseInt(uom);
 
-        if (intUom < 0) {
-            throw new ValidationException("UOM must be grater then 0" + ". Actual UOM is:" + intUom);
-        }
-
-        if (intUom >= MAX_VALUE_UOM) {
-            throw new ValidationException("UOM must be less then: " + MAX_VALUE_UOM + ". Actual UOM is:" + intUom);
+        if (intUom < MIN_VALUE_UOM || intUom >= MAX_VALUE_UOM) {
+            throw new ValidationException(format(VALIDATION_ERROR_MESSAGE, "UOM is not valid, should be between " + MIN_VALUE_UOM + " and "+ MAX_VALUE_UOM));
         }
     }
 
-    private void validateProductCode(String productCode) throws ValidationException {
+    private void validateProductCode(String productCode){
         if (!isValidProductCode(productCode)) {
-            throw new ValidationException("Invalid ProductCode Expected:(two uppercase letters before by two digits), Actual: " + productCode);
+            throw new ValidationException(format(VALIDATION_ERROR_MESSAGE, "product code is not valid Expected:(two uppercase letters before by two digits), Actual: " + productCode));
         }
     }
 
-    private void validateTimestamp(String timestamp) throws ValidationException {
+    private void validateTimestamp(String timestamp){
         try {
-            Date dateTime = new SimpleDateFormat(dateFormat).parse(timestamp);
+            Date dateTime = new SimpleDateFormat(DATE_FORMAT).parse(timestamp);
             if (dateTime.before(new Date(0)) || dateTime.after(new Date())) {
-                throw new ValidationException("Date is not valid: timestamp shouldn't be in future");
+                throw new ValidationException(format(VALIDATION_ERROR_MESSAGE, "date is not valid: timestamp shouldn't be in future"));
             }
         } catch (ParseException e) {
             throw new ValidationException(e);
         }
     }
 
-    private void validateInstructionMessagePrefix(String messagePrefix) {
-        if (StringUtils.isEmpty(messagePrefix)) {
-            throw new IllegalArgumentException("Message shouldn't be empty or null ");
-        }
-
-        if (!messagePrefix.equals(MESSAGE_PREFIX)) {
-            throw new IllegalArgumentException("Message should start with: (" + MESSAGE_PREFIX + ")");
+    private void validateInstructionMessagePrefix(String messagePrefix){
+        if (StringUtils.isEmpty(messagePrefix) || !messagePrefix.equals(MESSAGE_PREFIX)) {
+            throw new ValidationException(format(VALIDATION_ERROR_MESSAGE, "message prefix is not valid Expected: " + MESSAGE_PREFIX + " Actual: " + messagePrefix));
         }
     }
 
@@ -93,7 +99,4 @@ public class InstructionMessageValidator {
         return productCodeMatcher.matches();
     }
 
-    public void setDateFormat(String dateFormat) {
-        this.dateFormat = dateFormat;
-    }
 }

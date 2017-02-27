@@ -33,7 +33,7 @@ public class InstructionQueue {
     }
 
     public InstructionMessage dequeue() {
-        return queue.remove().getMessage();
+        return queue.poll().getMessage();
     }
 
     public InstructionMessage peek() {

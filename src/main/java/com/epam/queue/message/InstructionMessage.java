@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static java.lang.Integer.parseInt;
+
 public final class InstructionMessage {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
@@ -22,12 +24,12 @@ public final class InstructionMessage {
     private final Date timestamp;
 
 
-    public InstructionMessage(String[] message) throws ParseException {
-        this.instructionType =  MessageType.valueOf(message[INSTRUCTION_TYPE_POSITION]);
-        this.productCode = message[PRODUCT_CODE_POSITION];
-        this.quantity = Integer.parseInt(message[QUANTITY_POSITION]);
-        this.uom = Integer.parseInt(message[UOM_POSITION]);
-        this.timestamp = new SimpleDateFormat(DATE_FORMAT).parse(message[TIMESTAMP_POSITION]);
+    private InstructionMessage(MessageType messageType, String productCode, int quantity, int uom, Date timestamp) throws ParseException {
+        this.instructionType =  messageType;
+        this.productCode = productCode;
+        this.quantity = quantity;
+        this.uom = uom;
+        this.timestamp = timestamp;
     }
 
     public MessageType getInstructionType() {
@@ -48,6 +50,20 @@ public final class InstructionMessage {
 
     public Date getTimestamp() {
         return timestamp;
+    }
+
+    public static final class MessageBuilder{
+        private MessageBuilder() {
+        }
+
+        public static InstructionMessage build(String[] message) throws ParseException {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+            return new InstructionMessage(MessageType.valueOf(message[INSTRUCTION_TYPE_POSITION]),
+                    message[PRODUCT_CODE_POSITION],
+                    parseInt(message[QUANTITY_POSITION]),
+                    parseInt(message[UOM_POSITION]),
+                    dateFormat.parse(message[TIMESTAMP_POSITION]));
+        }
     }
 
 }

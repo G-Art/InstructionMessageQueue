@@ -46,6 +46,12 @@ public class InstructionMessageValidator {
     }
 
 
+    private void validateInstructionMessagePrefix(String messagePrefix){
+        if (isEmpty(messagePrefix) || !messagePrefix.equals(MESSAGE_PREFIX)) {
+            throw new ValidationException(format(VALIDATION_ERROR_MESSAGE, "message prefix is not valid Expected: " + MESSAGE_PREFIX + " Actual: " + messagePrefix));
+        }
+    }
+
     private void validateMessageType(String messageType) {
         MessageType.valueOf(messageType);
     }
@@ -76,12 +82,6 @@ public class InstructionMessageValidator {
             }
         } catch (ParseException e) {
             throw new ValidationException(e);
-        }
-    }
-
-    private void validateInstructionMessagePrefix(String messagePrefix){
-        if (isEmpty(messagePrefix) || !messagePrefix.equals(MESSAGE_PREFIX)) {
-            throw new ValidationException(format(VALIDATION_ERROR_MESSAGE, "message prefix is not valid Expected: " + MESSAGE_PREFIX + " Actual: " + messagePrefix));
         }
     }
 

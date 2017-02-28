@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static com.epam.queue.message.MessageType.valueOf;
 import static java.lang.Integer.parseInt;
 
 public final class InstructionMessage {
@@ -58,11 +59,11 @@ public final class InstructionMessage {
 
         public static InstructionMessage build(String[] message) throws ParseException {
             SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-            return new InstructionMessage(MessageType.valueOf(message[INSTRUCTION_TYPE_POSITION]),
-                    message[PRODUCT_CODE_POSITION],
-                    parseInt(message[QUANTITY_POSITION]),
-                    parseInt(message[UOM_POSITION]),
-                    dateFormat.parse(message[TIMESTAMP_POSITION]));
+            return new InstructionMessage(valueOf(message[INSTRUCTION_TYPE_POSITION]),
+                                          message[PRODUCT_CODE_POSITION],
+                                          parseInt(message[QUANTITY_POSITION]),
+                                          parseInt(message[UOM_POSITION]),
+                                          dateFormat.parse(message[TIMESTAMP_POSITION]));
         }
     }
 

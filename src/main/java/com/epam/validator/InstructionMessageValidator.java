@@ -1,9 +1,11 @@
 package com.epam.validator;
 
 import com.epam.queue.message.MessageType;
+import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,7 +55,12 @@ public class InstructionMessageValidator {
     }
 
     private void validateMessageType(String messageType) {
-        MessageType.valueOf(messageType);
+        try{
+            MessageType.valueOf(messageType);
+        }catch (IllegalArgumentException e){
+            throw new ValidationException(format(VALIDATION_ERROR_MESSAGE, "no enum are present Expected: " + Arrays.asList(MessageType.values()) + " Actual: "+ messageType));
+        }
+
     }
 
     private void validateQuantity(String quantity){

@@ -1,5 +1,6 @@
 package com.epam.queue;
 
+import com.epam.queue.message.InstructionMessage;
 import com.epam.queue.message.MessageType;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,9 +41,13 @@ public class InstructionQueueTest {
     }
 
     @Test
-    public void shouldChangeCountWhenMessagesEnqueued() throws ParseException {
+    public void shouldChangeCountWhenMessagesEnqueuedAndDequeue() throws ParseException {
         int expected_count = 1;
         instructionQueue.enqueue(build(CORRECT_MESSAGE_A_TYPE.split(SPRITTING_REGEXP)));
+        assertEquals(expected_count, instructionQueue.count());
+
+        expected_count = 0;
+        instructionQueue.dequeue();
         assertEquals(expected_count, instructionQueue.count());
     }
 
@@ -53,6 +58,16 @@ public class InstructionQueueTest {
 
         assertEquals(MessageType.A, instructionQueue.peek().getInstructionType());
     }
+
+    @Test
+    public void shouldPeekFirstAddedMessageWithTheSamePriority() throws ParseException {
+        InstructionMessage firstAddedMessage = build(CORRECT_MESSAGE_A_TYPE.split(SPRITTING_REGEXP));
+        instructionQueue.enqueue(firstAddedMessage);
+        instructionQueue.enqueue(build(CORRECT_MESSAGE_A_TYPE.split(SPRITTING_REGEXP)));
+
+        assertEquals(firstAddedMessage, instructionQueue.peek());
+    }
+
 
 
 }

@@ -1,33 +1,32 @@
 package com.epam.receiver.impl;
 
+import com.epam.parser.InstructionMessageParser;
 import com.epam.queue.InstructionQueue;
+import com.epam.queue.message.InstructionMessage;
 import com.epam.receiver.MessageReceiver;
 import com.epam.validator.InstructionMessageValidator;
 
 import java.text.ParseException;
 
-import static com.epam.queue.message.InstructionMessage.MessageBuilder.build;
 
 public class DefaultMessageReceiver implements MessageReceiver {
 
-    private final static String SPRITTING_REGEXP = " ";
-
     private InstructionMessageValidator validator;
     private InstructionQueue queue;
+    private InstructionMessageParser parser;
+
+    public DefaultMessageReceiver(InstructionMessageValidator validator, InstructionQueue queue, InstructionMessageParser parser) {
+        this.validator = validator;
+        this.queue = queue;
+        this.parser = parser;
+    }
 
     @Override
     public void receive(String message) throws ParseException {
-        String[] splittedMessage = message.split(SPRITTING_REGEXP);
-        validator.validate(splittedMessage);
-        queue.enqueue(build(splittedMessage));
+        InstructionMessage instructionMessage = parser.parse(message);
+        validator.validate(instructionMessage);
+        queue.enqueue(instructionMessage);
     }
 
-    public void setValidator(InstructionMessageValidator validator) {
-        this.validator = validator;
-    }
-
-    public void setQueue(InstructionQueue queue) {
-        this.queue = queue;
-    }
 
 }

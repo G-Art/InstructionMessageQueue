@@ -3,7 +3,6 @@ package com.epam.queue;
 import com.epam.queue.message.InstructionMessage;
 import com.epam.queue.message.MessageTypePriority;
 
-import java.util.Optional;
 import java.util.PriorityQueue;
 
 public class InstructionQueue {
@@ -33,12 +32,11 @@ public class InstructionQueue {
     }
 
     public InstructionMessage dequeue() {
-        return queue.poll().getMessage();
+        return getMessage(queue.poll());
     }
 
     public InstructionMessage peek() {
-        MessageWrapper messageWrapper = queue.peek();
-        return messageWrapper != null? messageWrapper.getMessage(): null;
+        return getMessage(queue.peek());
     }
 
     public int count() {
@@ -49,21 +47,24 @@ public class InstructionQueue {
         return queue.isEmpty();
     }
 
+    private InstructionMessage getMessage(MessageWrapper messageWrapper){
+        return messageWrapper != null ? messageWrapper.getMessage() : null;
+    }
 
     private final class MessageWrapper {
         private final InstructionMessage message;
         private final Integer order;
 
-        public MessageWrapper(InstructionMessage message, Integer order) {
+        private MessageWrapper(InstructionMessage message, Integer order) {
             this.message = message;
             this.order = order;
         }
 
-        public InstructionMessage getMessage() {
+        private InstructionMessage getMessage() {
             return message;
         }
 
-        public Integer getOrder() {
+        private Integer getOrder() {
             return order;
         }
 

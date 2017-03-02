@@ -6,16 +6,23 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.text.ParseException;
+import java.util.Date;
 
-import static com.epam.queue.message.InstructionMessage.MessageBuilder.build;
+import static com.epam.queue.message.MessageType.A;
+import static com.epam.queue.message.MessageType.D;
 import static org.junit.Assert.*;
 
 public class InstructionQueueTest {
 
-    private final static String SPRITTING_REGEXP = " ";
+    private static final MessageType aMessageType = A;
+    private static final MessageType dMessageType = D;
+    private static final String productCode = "MZ89";
+    private static final Integer quantity = 99;
+    private static final Integer uom = 50;
+    private static final Date timestamp = new Date(999999L);
 
-    private static final String CORRECT_MESSAGE_A_TYPE = "InstructionMessage A MZ89 5678 50 2015-03-05T10:04:56.012Z";
-    private static final String CORRECT_MESSAGE_D_TYPE = "InstructionMessage D MZ89 5678 50 2015-03-05T10:04:56.012Z";
+    private static final InstructionMessage CORRECT_MESSAGE_A_TYPE = buildMessage(aMessageType, productCode, quantity, uom, timestamp);
+    private static final InstructionMessage CORRECT_MESSAGE_D_TYPE = buildMessage(dMessageType, productCode, quantity, uom, timestamp);
 
     private InstructionQueue instructionQueue;
 
@@ -36,14 +43,14 @@ public class InstructionQueueTest {
 
     @Test
     public void shouldReturnFalseWhenQueueIsNotEmpty() throws ParseException {
-        instructionQueue.enqueue(build(CORRECT_MESSAGE_A_TYPE.split(SPRITTING_REGEXP)));
+        instructionQueue.enqueue(CORRECT_MESSAGE_A_TYPE);
         assertFalse(instructionQueue.isEmpty());
     }
 
     @Test
     public void shouldChangeCountWhenMessagesEnqueuedAndDequeue() throws ParseException {
         int expected_count = 1;
-        instructionQueue.enqueue(build(CORRECT_MESSAGE_A_TYPE.split(SPRITTING_REGEXP)));
+        instructionQueue.enqueue(CORRECT_MESSAGE_A_TYPE);
         assertEquals(expected_count, instructionQueue.count());
 
         expected_count = 0;
@@ -53,21 +60,24 @@ public class InstructionQueueTest {
 
     @Test
     public void shouldPeekMessageWithHighestPriority() throws ParseException {
-        instructionQueue.enqueue(build(CORRECT_MESSAGE_D_TYPE.split(SPRITTING_REGEXP)));
-        instructionQueue.enqueue(build(CORRECT_MESSAGE_A_TYPE.split(SPRITTING_REGEXP)));
+        instructionQueue.enqueue(CORRECT_MESSAGE_D_TYPE);
+        instructionQueue.enqueue(CORRECT_MESSAGE_A_TYPE);
 
-        assertEquals(MessageType.A, instructionQueue.peek().getInstructionType());
+        assertEquals(A, instructionQueue.peek().getInstructionType());
     }
 
     @Test
     public void shouldPeekFirstAddedMessageWithTheSamePriority() throws ParseException {
-        InstructionMessage firstAddedMessage = build(CORRECT_MESSAGE_A_TYPE.split(SPRITTING_REGEXP));
+        InstructionMessage firstAddedMessage = buildMessage(aMessageType, productCode, quantity, uom, timestamp);
         instructionQueue.enqueue(firstAddedMessage);
-        instructionQueue.enqueue(build(CORRECT_MESSAGE_A_TYPE.split(SPRITTING_REGEXP)));
+        instructionQueue.enqueue(CORRECT_MESSAGE_A_TYPE);
 
         assertEquals(firstAddedMessage, instructionQueue.peek());
     }
 
 
+    private static InstructionMessage buildMessage(MessageType messageType, String productCode, Integer quantity, Integer uom, Date timestamp) {
+        return new InstructionMessage(messageType, productCode, quantity, uom, timestamp);
+    }
 
 }

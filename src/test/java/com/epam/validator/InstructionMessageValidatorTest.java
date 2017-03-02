@@ -47,7 +47,7 @@ public class InstructionMessageValidatorTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithUOMLassMinValue() {
+    public void shouldThrowExceptionWhenMessageWithUOMLessMinValue() {
         Integer wrongUom = -1;
         messageValidator.validate(buildMessage(aMessageType, productCode, quantity, wrongUom, timestamp));
     }

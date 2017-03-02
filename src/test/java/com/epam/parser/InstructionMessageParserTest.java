@@ -33,12 +33,12 @@ public class InstructionMessageParserTest {
     }
 
     @Test(expected = InstructionMessageParseException.class)
-    public void shouldThrowExceptionWhenNewLineCharacterMissed(){
+    public void shouldThrowExceptionWhenNewLineCharacterMissed() {
         instructionMessageParser.parse(MESSAGE_WITHOUT_NEWLINE_CHARACTER);
     }
 
     @Test(expected = InstructionMessageParseException.class)
-    public void shouldThrowExceptionWhenPrefixWrong(){
+    public void shouldThrowExceptionWhenPrefixWrong() {
         instructionMessageParser.parse(MESSAGE_WITH_WRONG_PREFIX);
     }
 

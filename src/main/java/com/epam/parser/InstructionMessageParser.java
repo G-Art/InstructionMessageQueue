@@ -28,11 +28,11 @@ public class InstructionMessageParser {
     private static final int TIMESTAMP_POSITION = 5;
 
     public InstructionMessage parse(String message) {
-        try{
+        try {
             String[] splittedMessage = splitMessage(message);
             checkMessage(splittedMessage);
             return createInstructionMessage(splittedMessage);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             throw new InstructionMessageParseException(e);
         }
     }
@@ -49,34 +49,34 @@ public class InstructionMessageParser {
             throw new IllegalArgumentException(e);
         }
 
-        return new InstructionMessage(messageType,productCode,quontity, uom, timestamp);
+        return new InstructionMessage(messageType, productCode, quontity, uom, timestamp);
     }
 
-    private void checkMessage(String[] message){
+    private void checkMessage(String[] message) {
         checkParametersCount(message);
         checkInstructionMessagePrefix(message);
         checkNewLineSymbolIsPresent(message);
     }
 
     private void checkNewLineSymbolIsPresent(String[] message) {
-        if(!message[message.length-1].endsWith(MESSAGE_NEW_LINE_CHARACTER)){
+        if (!message[message.length - 1].endsWith(MESSAGE_NEW_LINE_CHARACTER)) {
             throw new IllegalArgumentException("Message should end with in newline character");
         }
     }
 
     private void checkInstructionMessagePrefix(String[] message) {
         if (!message[INSTRUCTION_PREFIX_POSITION].equals(MESSAGE_PREFIX)) {
-            throw new IllegalArgumentException("Message should start from "+ MESSAGE_PREFIX);
+            throw new IllegalArgumentException("Message should start from " + MESSAGE_PREFIX);
         }
     }
 
     private void checkParametersCount(String[] splittedMessage) {
-        if(splittedMessage.length != MESSAGE_PARAMETER_COUNT){
+        if (splittedMessage.length != MESSAGE_PARAMETER_COUNT) {
             throw new IllegalArgumentException("Not all parameters are present in the message. Example: InstructionMessage <InstructionType> <ProductCode> <Quantity> <UOM> <Timestamp>");
         }
     }
 
-    private String[] splitMessage(String message){
+    private String[] splitMessage(String message) {
         return message.split(SPLITTING_REGEXP);
     }
 }

@@ -47,7 +47,7 @@ public class InstructionQueue {
         return queue.isEmpty();
     }
 
-    private InstructionMessage getMessage(MessageWrapper messageWrapper){
+    private InstructionMessage getMessage(MessageWrapper messageWrapper) {
         return messageWrapper != null ? messageWrapper.getMessage() : null;
     }
 

@@ -15,7 +15,7 @@ public final class InstructionMessage {
 
 
     public InstructionMessage(MessageType messageType, String productCode, int quantity, int uom, Date timestamp) {
-        this.instructionType =  messageType;
+        this.instructionType = messageType;
         this.productCode = productCode;
         this.quantity = quantity;
         this.uom = uom;

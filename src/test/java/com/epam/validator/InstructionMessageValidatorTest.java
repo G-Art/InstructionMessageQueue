@@ -60,7 +60,7 @@ public class InstructionMessageValidatorTest {
 
     @Test(expected = ValidationException.class)
     public void shouldThrowExceptionWhenMessageWithTimestampInFuture() {
-        Date dateInFuture = new Date(System.currentTimeMillis()+999999);
+        Date dateInFuture = new Date(System.currentTimeMillis() + 999999);
         messageValidator.validate(buildMessage(aMessageType, productCode, quantity, uom, dateInFuture));
     }
 

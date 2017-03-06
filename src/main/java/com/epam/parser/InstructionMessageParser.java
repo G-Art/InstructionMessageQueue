@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static java.lang.Integer.valueOf;
+import static java.util.Objects.requireNonNull;
 
 
 public class InstructionMessageParser {
@@ -29,11 +30,12 @@ public class InstructionMessageParser {
 
     public InstructionMessage parse(String message) {
         try {
+            requireNonNull(message, "Message shouldn't be null");
             String[] splittedMessage = splitMessage(message);
             checkMessage(splittedMessage);
             return createInstructionMessage(splittedMessage);
         } catch (RuntimeException e) {
-            throw new InstructionMessageParseException(e);
+            throw new MessageParseException(e);
         }
     }
 
@@ -46,7 +48,7 @@ public class InstructionMessageParser {
         try {
             timestamp = new SimpleDateFormat(DATE_FORMAT).parse(splittedMessage[TIMESTAMP_POSITION]);
         } catch (ParseException e) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException("Timestamp cant be parsed Expected format: " + DATE_FORMAT +" Received timestamp " + splittedMessage[TIMESTAMP_POSITION], e);
         }
 
         return new InstructionMessage(messageType, productCode, quontity, uom, timestamp);

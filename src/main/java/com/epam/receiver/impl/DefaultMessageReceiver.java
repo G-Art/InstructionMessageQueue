@@ -6,9 +6,6 @@ import com.epam.queue.message.InstructionMessage;
 import com.epam.receiver.MessageReceiver;
 import com.epam.validator.InstructionMessageValidator;
 
-import java.text.ParseException;
-
-
 public class DefaultMessageReceiver implements MessageReceiver {
 
     private InstructionMessageValidator validator;
@@ -22,7 +19,7 @@ public class DefaultMessageReceiver implements MessageReceiver {
     }
 
     @Override
-    public void receive(String message) throws ParseException {
+    public void receive(String message) {
         InstructionMessage instructionMessage = parser.parse(message);
         validator.validate(instructionMessage);
         queue.enqueue(instructionMessage);

@@ -8,13 +8,25 @@ import org.junit.Test;
 import java.text.ParseException;
 import java.util.Date;
 
+import static com.epam.queue.message.MessageType.A;
+
 public class InstructionMessageValidatorTest {
 
-    private static final MessageType aMessageType = MessageType.A;
-    private static final String productCode = "MZ89";
-    private static final Integer quantity = 99;
-    private static final Integer uom = 50;
-    private static final Date timestamp = new Date(999999L);
+    private static final MessageType A_MESSAGE_TYPE = A;
+
+    private static final String PRODUCT_CODE = "MZ89";
+    private static final String WRONG_PRODUCT_CODE = "zm_89";
+
+    private static final Integer QUANTITY = 99;
+    private static final Integer WRONG_QUANTITY_MIN_VALUE = 0;
+
+    private static final Integer UOM = 50;
+    private static final Integer WRONG_UOM_OVER_MAX_VALUE = 256;
+    private static final Integer WRONG_UOM_LESS_MIN_VALUE = -1;
+
+    private static final Date CORRECT_TIMESTAMP = new Date(1);
+    private static final Date DATE_BEFORE_UNIX_EPOCH = new Date(-1);
+    private static final Date DATE_IN_FUTURE = new Date(System.currentTimeMillis() + 999999);
 
     private InstructionMessageValidator messageValidator;
 
@@ -24,49 +36,39 @@ public class InstructionMessageValidatorTest {
     }
 
     @Test
-    public void shouldNotThrowExceptionWhenMessageIsCorrect() throws ValidationException {
-        messageValidator.validate(buildMessage(aMessageType, productCode, quantity, uom, timestamp));
+    public void shouldNotThrowExceptionWhenMessageIsCorrect() {
+        messageValidator.validate(new InstructionMessage(A_MESSAGE_TYPE, PRODUCT_CODE, QUANTITY, UOM, CORRECT_TIMESTAMP));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test(expected = MessageValidationException.class)
     public void shouldThrowExceptionWhenMessageWithIncorrectProductCode() {
-        String wrongProductCode = "zm_89";
-        messageValidator.validate(buildMessage(aMessageType, wrongProductCode, quantity, uom, timestamp));
+        messageValidator.validate(new InstructionMessage(A_MESSAGE_TYPE, WRONG_PRODUCT_CODE, QUANTITY, UOM, CORRECT_TIMESTAMP));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test(expected = MessageValidationException.class)
     public void shouldThrowExceptionWhenMessageWithIncorrectQuantity() {
-        Integer wrongQuantity = -1;
-        messageValidator.validate(buildMessage(aMessageType, productCode, wrongQuantity, uom, timestamp));
+        messageValidator.validate(new InstructionMessage(A_MESSAGE_TYPE, PRODUCT_CODE, WRONG_QUANTITY_MIN_VALUE, UOM, CORRECT_TIMESTAMP));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test(expected = MessageValidationException.class)
     public void shouldThrowExceptionWhenMessageWithUOMOverMaxValue() {
-        Integer wrongUom = 256;
-        messageValidator.validate(buildMessage(aMessageType, productCode, quantity, wrongUom, timestamp));
+        messageValidator.validate(new InstructionMessage(A_MESSAGE_TYPE, PRODUCT_CODE, QUANTITY, WRONG_UOM_OVER_MAX_VALUE, CORRECT_TIMESTAMP));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test(expected = MessageValidationException.class)
     public void shouldThrowExceptionWhenMessageWithUOMLessMinValue() {
-        Integer wrongUom = -1;
-        messageValidator.validate(buildMessage(aMessageType, productCode, quantity, wrongUom, timestamp));
+        messageValidator.validate(new InstructionMessage(A_MESSAGE_TYPE, PRODUCT_CODE, QUANTITY, WRONG_UOM_LESS_MIN_VALUE, CORRECT_TIMESTAMP));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test(expected = MessageValidationException.class)
     public void shouldThrowExceptionWhenMessageWithTimestampBeforeUnixEpoch() {
-        Date unixEpoch = new Date(0);
-        messageValidator.validate(buildMessage(aMessageType, productCode, quantity, uom, unixEpoch));
+
+        messageValidator.validate(new InstructionMessage(A_MESSAGE_TYPE, PRODUCT_CODE, QUANTITY, UOM, DATE_BEFORE_UNIX_EPOCH));
     }
 
-    @Test(expected = ValidationException.class)
+    @Test(expected = MessageValidationException.class)
     public void shouldThrowExceptionWhenMessageWithTimestampInFuture() {
-        Date dateInFuture = new Date(System.currentTimeMillis() + 999999);
-        messageValidator.validate(buildMessage(aMessageType, productCode, quantity, uom, dateInFuture));
+        messageValidator.validate(new InstructionMessage(A_MESSAGE_TYPE, PRODUCT_CODE, QUANTITY, UOM, DATE_IN_FUTURE));
     }
-
-    private static InstructionMessage buildMessage(MessageType messageType, String productCode, Integer quantity, Integer uom, Date timestamp) {
-        return new InstructionMessage(messageType, productCode, quantity, uom, timestamp);
-    }
-
 
 }

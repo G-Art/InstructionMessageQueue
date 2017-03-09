@@ -35,23 +35,23 @@ public class InstructionMessageParser {
             checkMessage(splittedMessage);
             return createInstructionMessage(splittedMessage);
         } catch (RuntimeException e) {
-            throw new MessageParseException(e);
+            throw new MessageParseException("Message: " + message + "can't be parsed due to: "+ e.getClass().getName() + ": " + e.getMessage(), e);
         }
     }
 
     private InstructionMessage createInstructionMessage(String[] splittedMessage) {
         MessageType messageType = MessageType.valueOf(splittedMessage[INSTRUCTION_TYPE_POSITION]);
         String productCode = splittedMessage[PRODUCT_CODE_POSITION];
-        Integer quontity = valueOf(splittedMessage[QUANTITY_POSITION]);
+        Integer quantity = valueOf(splittedMessage[QUANTITY_POSITION]);
         Integer uom = valueOf(splittedMessage[UOM_POSITION]);
         Date timestamp;
         try {
             timestamp = new SimpleDateFormat(DATE_FORMAT).parse(splittedMessage[TIMESTAMP_POSITION]);
         } catch (ParseException e) {
-            throw new IllegalArgumentException("Timestamp cant be parsed Expected format: " + DATE_FORMAT +" Received timestamp " + splittedMessage[TIMESTAMP_POSITION], e);
+            throw new IllegalArgumentException("Timestamp in not match the data format: " + DATE_FORMAT, e);
         }
 
-        return new InstructionMessage(messageType, productCode, quontity, uom, timestamp);
+        return new InstructionMessage(messageType, productCode, quantity, uom, timestamp);
     }
 
     private void checkMessage(String[] message) {

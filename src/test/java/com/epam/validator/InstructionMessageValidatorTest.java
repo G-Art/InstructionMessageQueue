@@ -1,7 +1,6 @@
 package com.epam.validator;
 
 import com.epam.queue.message.InstructionMessage;
-import com.epam.queue.message.MessageType;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,17 +11,18 @@ import static com.epam.queue.message.MessageType.A;
 
 public class InstructionMessageValidatorTest {
 
-    private static final MessageType A_MESSAGE_TYPE = A;
-
     private static final String PRODUCT_CODE = "MZ89";
-    private static final String WRONG_PRODUCT_CODE = "zm_89";
+    private static final String WRONG_PRODUCT_CODE = "ZM_89";
+    private static final String WRONG_PRODUCT_CODE_LOWERCASE = "zm89";
+    private static final String WRONG_PRODUCT_CODE_WITHOUT_DIGITS = "ZM";
 
     private static final Integer QUANTITY = 99;
     private static final Integer WRONG_QUANTITY_MIN_VALUE = 0;
+    private static final Integer WRONG_QUANTITY_BELOW_MIN_VALUE = -1;
 
     private static final Integer UOM = 50;
-    private static final Integer WRONG_UOM_OVER_MAX_VALUE = 256;
-    private static final Integer WRONG_UOM_LESS_MIN_VALUE = -1;
+    private static final Integer WRONG_UOM_ABOVE_MAX_VALUE = 256;
+    private static final Integer WRONG_UOM_BELOW_MIN_VALUE = -1;
 
     private static final Date CORRECT_TIMESTAMP = new Date(1);
     private static final Date DATE_BEFORE_UNIX_EPOCH = new Date(-1);
@@ -37,38 +37,53 @@ public class InstructionMessageValidatorTest {
 
     @Test
     public void shouldNotThrowExceptionWhenMessageIsCorrect() {
-        messageValidator.validate(new InstructionMessage(A_MESSAGE_TYPE, PRODUCT_CODE, QUANTITY, UOM, CORRECT_TIMESTAMP));
+        messageValidator.validate(new InstructionMessage(A, PRODUCT_CODE, QUANTITY, UOM, CORRECT_TIMESTAMP));
     }
 
     @Test(expected = MessageValidationException.class)
     public void shouldThrowExceptionWhenMessageWithIncorrectProductCode() {
-        messageValidator.validate(new InstructionMessage(A_MESSAGE_TYPE, WRONG_PRODUCT_CODE, QUANTITY, UOM, CORRECT_TIMESTAMP));
+        messageValidator.validate(new InstructionMessage(A, WRONG_PRODUCT_CODE, QUANTITY, UOM, CORRECT_TIMESTAMP));
     }
 
     @Test(expected = MessageValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithIncorrectQuantity() {
-        messageValidator.validate(new InstructionMessage(A_MESSAGE_TYPE, PRODUCT_CODE, WRONG_QUANTITY_MIN_VALUE, UOM, CORRECT_TIMESTAMP));
+    public void shouldThrowExceptionWhenMessageWithProductCodeInLowercase() {
+        messageValidator.validate(new InstructionMessage(A, WRONG_PRODUCT_CODE_LOWERCASE, QUANTITY, UOM, CORRECT_TIMESTAMP));
     }
 
     @Test(expected = MessageValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithUOMOverMaxValue() {
-        messageValidator.validate(new InstructionMessage(A_MESSAGE_TYPE, PRODUCT_CODE, QUANTITY, WRONG_UOM_OVER_MAX_VALUE, CORRECT_TIMESTAMP));
+    public void shouldThrowExceptionWhenMessageWithProductCodeWithoutDigits() {
+        messageValidator.validate(new InstructionMessage(A, WRONG_PRODUCT_CODE_WITHOUT_DIGITS, QUANTITY, UOM, CORRECT_TIMESTAMP));
     }
 
     @Test(expected = MessageValidationException.class)
-    public void shouldThrowExceptionWhenMessageWithUOMLessMinValue() {
-        messageValidator.validate(new InstructionMessage(A_MESSAGE_TYPE, PRODUCT_CODE, QUANTITY, WRONG_UOM_LESS_MIN_VALUE, CORRECT_TIMESTAMP));
+    public void shouldThrowExceptionWhenMessageWithMinValueQuantity() {
+        messageValidator.validate(new InstructionMessage(A, PRODUCT_CODE, WRONG_QUANTITY_MIN_VALUE, UOM, CORRECT_TIMESTAMP));
+    }
+
+    @Test(expected = MessageValidationException.class)
+    public void shouldThrowExceptionWhenMessageWithBelowMinValueQuantity() {
+        messageValidator.validate(new InstructionMessage(A, PRODUCT_CODE, WRONG_QUANTITY_BELOW_MIN_VALUE, UOM, CORRECT_TIMESTAMP));
+    }
+
+    @Test(expected = MessageValidationException.class)
+    public void shouldThrowExceptionWhenMessageWithUOMAboveMaxValue() {
+        messageValidator.validate(new InstructionMessage(A, PRODUCT_CODE, QUANTITY, WRONG_UOM_ABOVE_MAX_VALUE, CORRECT_TIMESTAMP));
+    }
+
+    @Test(expected = MessageValidationException.class)
+    public void shouldThrowExceptionWhenMessageWithUOMBelowMinValue() {
+        messageValidator.validate(new InstructionMessage(A, PRODUCT_CODE, QUANTITY, WRONG_UOM_BELOW_MIN_VALUE, CORRECT_TIMESTAMP));
     }
 
     @Test(expected = MessageValidationException.class)
     public void shouldThrowExceptionWhenMessageWithTimestampBeforeUnixEpoch() {
 
-        messageValidator.validate(new InstructionMessage(A_MESSAGE_TYPE, PRODUCT_CODE, QUANTITY, UOM, DATE_BEFORE_UNIX_EPOCH));
+        messageValidator.validate(new InstructionMessage(A, PRODUCT_CODE, QUANTITY, UOM, DATE_BEFORE_UNIX_EPOCH));
     }
 
     @Test(expected = MessageValidationException.class)
     public void shouldThrowExceptionWhenMessageWithTimestampInFuture() {
-        messageValidator.validate(new InstructionMessage(A_MESSAGE_TYPE, PRODUCT_CODE, QUANTITY, UOM, DATE_IN_FUTURE));
+        messageValidator.validate(new InstructionMessage(A, PRODUCT_CODE, QUANTITY, UOM, DATE_IN_FUTURE));
     }
 
 }

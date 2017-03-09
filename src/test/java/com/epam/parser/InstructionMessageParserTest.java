@@ -1,7 +1,6 @@
 package com.epam.parser;
 
 import com.epam.queue.message.InstructionMessage;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

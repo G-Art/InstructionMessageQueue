@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static java.lang.Integer.valueOf;
-import static java.util.Objects.requireNonNull;
 
 
 public class InstructionMessageParser {
@@ -29,56 +28,80 @@ public class InstructionMessageParser {
     private static final int TIMESTAMP_POSITION = 5;
 
     public InstructionMessage parse(String message) {
-        try {
-            requireNonNull(message, "Message shouldn't be null");
-            String[] splittedMessage = splitMessage(message);
-            checkMessage(splittedMessage);
-            return createInstructionMessage(splittedMessage);
-        } catch (RuntimeException e) {
-            throw new MessageParseException("Message: " + message + "can't be parsed due to: "+ e.getClass().getName() + ": " + e.getMessage(), e);
-        }
+        String[] splittedMessage = splitMessage(message);
+        checkMessage(splittedMessage);
+        return createInstructionMessage(splittedMessage);
     }
 
     private InstructionMessage createInstructionMessage(String[] splittedMessage) {
-        MessageType messageType = MessageType.valueOf(splittedMessage[INSTRUCTION_TYPE_POSITION]);
+        MessageType messageType = retrieveMessageType(splittedMessage);
         String productCode = splittedMessage[PRODUCT_CODE_POSITION];
-        Integer quantity = valueOf(splittedMessage[QUANTITY_POSITION]);
-        Integer uom = valueOf(splittedMessage[UOM_POSITION]);
+        Integer quantity = retrieveQuantity(splittedMessage);
+        Integer uom = retrieveUom(splittedMessage);
         Date timestamp;
         try {
             timestamp = new SimpleDateFormat(DATE_FORMAT).parse(splittedMessage[TIMESTAMP_POSITION]);
         } catch (ParseException e) {
-            throw new IllegalArgumentException("Timestamp in not match the data format: " + DATE_FORMAT, e);
+            throw new MessageParseException("Timestamp in not match the data format: " + DATE_FORMAT, e);
         }
 
         return new InstructionMessage(messageType, productCode, quantity, uom, timestamp);
     }
 
+    private Integer retrieveUom(String[] splittedMessage) {
+        try {
+            return valueOf(splittedMessage[UOM_POSITION]);
+        } catch (RuntimeException ex) {
+            throw new MessageParseException("Uom parameter is not a integer", ex);
+        }
+    }
+
+    private Integer retrieveQuantity(String[] splittedMessage) {
+        try {
+            return valueOf(splittedMessage[QUANTITY_POSITION]);
+        } catch (RuntimeException ex) {
+            throw new MessageParseException("Product quantity parameter is not a integer", ex);
+        }
+    }
+
+    private MessageType retrieveMessageType(String[] splittedMessage) {
+        try {
+            return MessageType.valueOf(splittedMessage[INSTRUCTION_TYPE_POSITION]);
+        } catch (RuntimeException ex) {
+            throw new MessageParseException("Message type is wrong. Expected [ A,B,C,D ]", ex);
+        }
+    }
+
     private void checkMessage(String[] message) {
         checkParametersCount(message);
         checkInstructionMessagePrefix(message);
-        checkNewLineSymbolIsPresent(message);
+        checkSuffixIsPresent(message);
     }
 
-    private void checkNewLineSymbolIsPresent(String[] message) {
-        if (!message[message.length - 1].endsWith(MESSAGE_NEW_LINE_CHARACTER)) {
-            throw new IllegalArgumentException("Message should end with in newline character");
+    private void checkSuffixIsPresent(String[] message) {
+        String lastParameter = message[message.length - 1];
+
+        if (!lastParameter.endsWith(MESSAGE_NEW_LINE_CHARACTER) || lastParameter.substring(0, lastParameter.length() - MESSAGE_NEW_LINE_CHARACTER.length()).endsWith(MESSAGE_NEW_LINE_CHARACTER)) {
+            throw new MessageParseException("Message should end with one newline character");
         }
     }
 
     private void checkInstructionMessagePrefix(String[] message) {
         if (!message[INSTRUCTION_PREFIX_POSITION].equals(MESSAGE_PREFIX)) {
-            throw new IllegalArgumentException("Message should start from " + MESSAGE_PREFIX);
+            throw new MessageParseException("Message should start from " + MESSAGE_PREFIX);
         }
     }
 
     private void checkParametersCount(String[] splittedMessage) {
         if (splittedMessage.length != MESSAGE_PARAMETER_COUNT) {
-            throw new IllegalArgumentException("Not all parameters are present in the message. Example: InstructionMessage <InstructionType> <ProductCode> <Quantity> <UOM> <Timestamp>");
+            throw new MessageParseException("Not all parameters are present in the message. Example: InstructionMessage <InstructionType> <ProductCode> <Quantity> <UOM> <Timestamp>");
         }
     }
 
     private String[] splitMessage(String message) {
+        if (message == null || message.isEmpty()) {
+            throw new MessageParseException("Message should be null or empty");
+        }
         return message.split(SPLITTING_REGEXP);
     }
 }

@@ -1,7 +1,7 @@
 package com.epam.receiver;
 
-import com.epam.parser.MessageParseException;
 import com.epam.parser.InstructionMessageParser;
+import com.epam.parser.MessageParseException;
 import com.epam.queue.InstructionQueue;
 import com.epam.receiver.impl.DefaultMessageReceiver;
 import com.epam.validator.InstructionMessageValidator;
@@ -20,13 +20,13 @@ public class DefaultMessageReceiverTest {
     private DefaultMessageReceiver messageReceiver = new DefaultMessageReceiver(new InstructionMessageValidator(), instructionQueue, new InstructionMessageParser());
 
     @Test
-    public void shouldAcceptWhenMessageIsCorrect() {
+    public void shouldPutMessageIntoQueue() {
         messageReceiver.receive(CORRECT_MESSAGE_A_TYPE);
         assertFalse(instructionQueue.isEmpty());
     }
 
     @Test(expected = MessageParseException.class)
-    public void shouldThrowExceptionWhenMessageIsNull() {
+    public void shouldThrowParsingExceptionWhenMessageIsNull() {
         messageReceiver.receive(null);
     }
 

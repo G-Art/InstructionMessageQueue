@@ -52,21 +52,21 @@ public class InstructionMessageValidatorTest {
     @Test()
     public void shouldThrowExceptionWhenMessageWithIncorrectProductCode() {
         expectedEx.expect(MessageValidationException.class);
-        expectedEx.expectMessage("Validation error: product code is not valid Expected:(two uppercase letters before by two digits), Actual: " + WRONG_PRODUCT_CODE);
+        expectedEx.expectMessage("Product code is not valid Expected:(two uppercase letters before by two digits), Actual: " + WRONG_PRODUCT_CODE);
         messageValidator.validate(new InstructionMessage(A, WRONG_PRODUCT_CODE, QUANTITY, UOM, CORRECT_TIMESTAMP));
     }
 
     @Test()
     public void shouldThrowExceptionWhenMessageWithProductCodeInLowercase() {
         expectedEx.expect(MessageValidationException.class);
-        expectedEx.expectMessage("Validation error: product code is not valid Expected:(two uppercase letters before by two digits), Actual: " + WRONG_PRODUCT_CODE_LOWERCASE);
+        expectedEx.expectMessage("Product code is not valid Expected:(two uppercase letters before by two digits), Actual: " + WRONG_PRODUCT_CODE_LOWERCASE);
         messageValidator.validate(new InstructionMessage(A, WRONG_PRODUCT_CODE_LOWERCASE, QUANTITY, UOM, CORRECT_TIMESTAMP));
     }
 
     @Test()
     public void shouldThrowExceptionWhenMessageWithProductCodeWithoutDigits() {
         expectedEx.expect(MessageValidationException.class);
-        expectedEx.expectMessage("Validation error: product code is not valid Expected:(two uppercase letters before by two digits), Actual: " + WRONG_PRODUCT_CODE_WITHOUT_DIGITS);
+        expectedEx.expectMessage("Product code is not valid Expected:(two uppercase letters before by two digits), Actual: " + WRONG_PRODUCT_CODE_WITHOUT_DIGITS);
         messageValidator.validate(new InstructionMessage(A, WRONG_PRODUCT_CODE_WITHOUT_DIGITS, QUANTITY, UOM, CORRECT_TIMESTAMP));
     }
 
@@ -78,7 +78,7 @@ public class InstructionMessageValidatorTest {
     @Test()
     public void shouldThrowExceptionWhenMessageWithBelowMinValidValueQuantity() {
         expectedEx.expect(MessageValidationException.class);
-        expectedEx.expectMessage("Validation error: quantity is not valid: should not be lass then 0");
+        expectedEx.expectMessage("Quantity is not valid: should not be less then 0");
         messageValidator.validate(new InstructionMessage(A, PRODUCT_CODE, WRONG_QUANTITY_BELOW_MIN_VALID_VALUE, UOM, CORRECT_TIMESTAMP));
     }
 
@@ -90,7 +90,7 @@ public class InstructionMessageValidatorTest {
     @Test()
     public void shouldThrowExceptionWhenMessageWithUOMAboveMaxValidValue() {
         expectedEx.expect(MessageValidationException.class);
-        expectedEx.expectMessage("Validation error: UOM is not valid, should be between 0 and 256");
+        expectedEx.expectMessage("UOM is not valid, should be between 0 and 256");
         messageValidator.validate(new InstructionMessage(A, PRODUCT_CODE, QUANTITY, WRONG_UOM_ABOVE_MAX_VALID_VALUE, CORRECT_TIMESTAMP));
     }
 
@@ -102,27 +102,26 @@ public class InstructionMessageValidatorTest {
     @Test()
     public void shouldThrowExceptionWhenMessageWithUOMBelowMinValidValue() {
         expectedEx.expect(MessageValidationException.class);
-        expectedEx.expectMessage("Validation error: UOM is not valid, should be between 0 and 256");
+        expectedEx.expectMessage("UOM is not valid, should be between 0 and 256");
         messageValidator.validate(new InstructionMessage(A, PRODUCT_CODE, QUANTITY, WRONG_UOM_BELOW_MIN_VALID_VALUE, CORRECT_TIMESTAMP));
     }
 
     @Test()
     public void shouldThrowExceptionWhenMessageWithTimestampUnixEpoch() {
         expectedEx.expect(MessageValidationException.class);
-        expectedEx.expectMessage("Validation error: date is not valid: timestamp shouldn't be lass than Unix epoch and more than current data time");
+        expectedEx.expectMessage("Date is not valid: timestamp shouldn't be lass than Unix epoch and more than current data time");
         messageValidator.validate(new InstructionMessage(A, PRODUCT_CODE, QUANTITY, UOM, DATE_UNIX_EPOCH));
     }
 
     @Test()
     public void shouldThrowExceptionWhenMessageWithTimestampInFuture() {
         expectedEx.expect(MessageValidationException.class);
-        expectedEx.expectMessage("Validation error: date is not valid: timestamp shouldn't be lass than Unix epoch and more than current data time");
+        expectedEx.expectMessage("Date is not valid: timestamp shouldn't be lass than Unix epoch and more than current data time");
         messageValidator.validate(new InstructionMessage(A, PRODUCT_CODE, QUANTITY, UOM, DATE_IN_FUTURE));
     }
 
     private static Date createDateInFuture() {
-        Instant oneDayFuture = Instant.now().plus(1, DAYS);
-        return Date.from(oneDayFuture);
+        return Date.from(Instant.now().plus(1, DAYS));
     }
 
 }
